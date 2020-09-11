@@ -1,9 +1,3 @@
-/*===================================================================================
- * @FileName : 제강Agent 서비스에서 공통으로 사용할 Log 관련 Utils
- * Change history
- * @수정 날짜;SCR_NO;수정자;수정내용
- * @2019-06-27;00000;허철호;최초생성
- *==================================================================================*/
 package com.posco.mes3.m2da01.domain.share;
 
 import java.sql.Timestamp;
@@ -12,14 +6,6 @@ import com.posco.mes3.reuse.common.logging.PosLogWriterIF;
 import com.posco.mes3.reuse.common.logging.PosLogger;
 import com.poscoict.base.share.util.string.StringUtil;
 
-/**
- * @desc 제강Agent 서비스에서 공통으로 사용하기 위한 Log 관련 Util들을 제공하는 Class이다.
- *
- * @author 허철호
- * @version 1.0
- *
- * @see 
- */
 public class LogUtils {
 
 	/**
