@@ -1,0 +1,1666 @@
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.posco.mes3.m2drq0.bof">
+	<!-- <select id="selectXXXX" resultType="sample"><![CDATA[ ]]></select> -->
+	<select id="SteelSmRmatThwUseRst"
+		resultType="com.posco.mes3.m2drq0.domain.dto.bof.SteelSmRmatThwUseRstDto"><![CDATA[
+    SELECT
+	   ROWNUM NO
+	  ,SM_RMAT_THW_TM_TP_CD
+	  ,SM_RMAT_THW_TM_TP_CD_DESC
+	  ,MRMAT_SUB_RMAT_TP
+	  ,MRMAT_SUB_RMAT_TPCD_DESC
+	  ,ASSEMBLY_ITEM_NUMBER
+	  ,RMAT_MAN_ITEM_DESC_CD_N
+	  ,SM_RMAT_ITEM_DESC_CD
+	  ,RMAT_MAN_ITEM_DESC_CD_NAM
+	  ,SM_RMAT_THW_QT
+	  ,SM_RMAT_THW_SAT_DT
+	  ,SM_RMAT_THW_DN_DT
+  FROM (SELECT RANK() OVER(PARTITION BY STEL.MTL_NO,STEL.RMAT_MAN_ITEM_DESC_CD_N,STEL.SM_RMAT_THW_TM_TP_CD ORDER BY STEL.SM_RMAT_THW_DN_DT) RN
+		      ,STEL.SM_RMAT_THW_TM_TP_CD
+		      ,(SELECT CD_V_MEANING
+		          FROM VI_M00_CODE_ACCESS
+		         WHERE CD_TP = 'SM_RMAT_THW_TM_TP_CD'
+		           AND CATEGORY_GROUP_NM = 'SC4000'
+		           AND CD_V = STEL.SM_RMAT_THW_TM_TP_CD
+		           AND ROWNUM = 1) SM_RMAT_THW_TM_TP_CD_DESC
+		      ,STEL.MRMAT_SUB_RMAT_TP
+		      ,(SELECT CD_V_MEANING
+		          FROM VI_M00_CODE_ACCESS
+		         WHERE CD_TP = 'MRMAT_SUB_RMAT_TP'
+		           AND CATEGORY_GROUP_NM = 'SC1000'
+		           AND CD_V = STEL.MRMAT_SUB_RMAT_TP
+		           AND ROWNUM = 1) MRMAT_SUB_RMAT_TPCD_DESC
+		      ,STEL.ASSEMBLY_ITEM_NUMBER
+		      ,STEL.RMAT_MAN_ITEM_DESC_CD_N
+		      ,STEL.SM_RMAT_ITEM_DESC_CD
+		      ,STEL.RMAT_MAN_ITEM_DESC_CD_NAM
+		      ,STEL.SM_RMAT_THW_QT
+		      ,TO_CHAR(STEL.SM_RMAT_THW_SAT_DT,'YYYY-MM-DD HH24:MI:SS') SM_RMAT_THW_SAT_DT
+		      ,TO_CHAR(STEL.SM_RMAT_THW_DN_DT,'YYYY-MM-DD HH24:MI:SS') SM_RMAT_THW_DN_DT
+		  FROM POSM2D.TB_M2DC01_C_RMATINT010 STEL
+		 WHERE STEL.MTL_NO =  #{mtlNo}
+		   AND STEL.SM_RMAT_THW_TM_TP_CD LIKE #{smRmatThwTmTpCd} ||'%'
+		   AND STEL.MRMAT_SUB_RMAT_TP LIKE #{mratSubRmatTp} ||'%'
+		 ORDER BY STEL.SM_RMAT_THW_TM_TP_CD
+		         ,STEL.RMAT_MAN_ITEM_DESC_CD_N
+		         ,STEL.SM_RMAT_THW_DN_DT
+	   )
+ ORDER BY SM_RMAT_THW_TM_TP_CD
+         ,RMAT_MAN_ITEM_DESC_CD_N
+         ,SM_RMAT_THW_DN_DT
+	 ]]></select>
+	<select id="SteelSmRmatThwUseRstTotal"
+		resultType="com.posco.mes3.m2drq0.domain.dto.bof.SteelSmRmatThwUseRstTotalDto"><![CDATA[
+    WITH
+WH AS
+(
+    SELECT  #{mtlNo} as MTL_NO
+          ,#{smRmatThwTmTpCd} as SM_RMAT_THW_TM_TP_CD
+          ,#{mratSubRmatTp}  as MRMAT_SUB_RMAT_TP
+      FROM DUAL
+)
+SELECT --m22d20e140
+            STEL.RMAT_MAN_ITEM_DESC_CD_N               -- 원료대표품명코드
+      ,STEL.RMAT_MAN_ITEM_DESC_CD_NAM           -- 원료대표품명코드명
+      ,SUM(STEL.SM_RMAT_THW_QT) SM_RMAT_THW_QT  -- 제강원료투입량
+  FROM POSM2D.TB_M2DC01_C_RMATINT010 STEL
+  	  ,WH
+ WHERE STEL.MTL_NO = WH.MTL_NO
+   AND STEL.SM_RMAT_THW_TM_TP_CD LIKE WH.SM_RMAT_THW_TM_TP_CD||'%'
+   AND STEL.MRMAT_SUB_RMAT_TP LIKE WH.MRMAT_SUB_RMAT_TP||'%'
+ GROUP BY STEL.RMAT_MAN_ITEM_DESC_CD_N, STEL.RMAT_MAN_ITEM_DESC_CD_NAM
+ ORDER BY STEL.RMAT_MAN_ITEM_DESC_CD_N, STEL.RMAT_MAN_ITEM_DESC_CD_NAM
+	 ]]></select>
+	<select id="SteelLdFceHotBlastStoveResult"
+		resultType="com.posco.mes3.m2drq0.domain.dto.bof.SteelLdFceHotBlastStoveResultDto"><![CDATA[
+    SELECT 
+MTL_NO
+,WORKS_CODE
+,OPER_FLAG
+,FAC_OP_CD_N
+,SM_LD_BVES_FECO_NO
+,SM_LD_BVES_FECO_NO_EXCN_DIM
+,SM_LD_BVES_FECO_LCZE_PRD
+,SM_LD_BVES_FECO_ACM_LCZE
+,SM_LD_LBLW_NOZ_LNG_USG
+,SM_LD_LBLW_NOZ_N2_USG
+,SM_LD_LBLW_NOZ_O2_USG
+,SM_LD_LBLW_NOZ_ITUB_CABZ_USG
+,SM_LD_LBLW_NOZ_ITUB_LIME_USG
+,SM_PS_BOP_BLW_MT_TP
+,SM_PS_BOP_HBLW_EN_TMP
+,SM_PS_BOP_HBLW_EN_FL
+,SM_PS_BOP_HBLW_USG_STAT_TP
+,SM_PS_BOP_HBLW_VV_STAT_TP
+,SM_PS_BOP_HBLW_CQN_TM
+,SM_PS_BOP_HBLW_O2_LOAD_QT
+,SM_PS_BOP_HBLW_O2_LOAD_TM
+,SM_PS_BOP_HBLW_HI_TMP
+,SM_PS_BOP_HBLW_LOWT_TMP
+,SM_PS_BOP_HBLW_AV_TMP
+,SM_PS_BOP_HBLW_HI_O2_DEN
+,SM_PS_BOP_HBLW_LOWT_O2_DEN
+,SM_PS_BOP_HBLW_AV_O2_DEN
+,SM_PS_BOP_HTF_COMB_TM
+,SM_PS_BOP_HTF_DUCT_PRHT_TM
+,SM_PS_BOP_HTF_LNG_USG
+,SM_PS_BOP_HTF_N2_USG_QT
+,SM_PS_BOP_HTF_COMB_SAT_DT
+,SM_PS_BOP_HTF_COMB_DN_DT
+,SM_PS_BOP_HBLW_DUCT_PRHT_SDT
+,SM_PS_BOP_HBLW_DUCT_PRHT_DDT
+,SM_PS_BOP_HBLW_CQN_SAT_DT
+,SM_PS_BOP_HBLW_CQN_DN_DT
+,SM_PS_BOP_HBLW_O2_LOAD_SAT_DT
+,SM_PS_BOP_HBLW_O2_LOAD_DN_DT				
+FROM POSM2D.TB_M2DB02_C_BOFBLW010
+WHERE OPER_FLAG=#{operFlag}  AND FAC_OP_CD_N =#{facOpCdN} AND MTL_NO=#{mtlNo}
+	 ]]></select>
+	<select id="SteelLdFceLowBlowResults"
+		resultType="com.posco.mes3.m2drq0.domain.dto.bof.SteelLdFceLowBlowResultsDto"><![CDATA[
+    SELECT 
+MTL_NO
+,SM_LD_LBLW_NOZ_NO
+,WORKS_CODE
+,OPER_FLAG
+,FAC_OP_CD_N
+,SM_LD_LBLW_NOZ_EXCN_DIM
+,SM_LD_LBLW_NOZ_USG_TIM
+,SM_LD_LBLW_NOZ_ACM_USG_TIM
+,SM_LD_LBLW_NOZ_TMP
+,SM_LD_LBLW_NOZ_CRSE_F
+,SM_LD_BLW_NOZ_LW_ITUB_USG_GPS
+,SM_LD_BLW_NOZLW_ITUB_USG_GFL
+,SM_LD_BLW_LW_NOZ_ITUB_USG_GTP
+,SM_LD_BLW_LW_NOZ_EXA_USG_GPS
+,SM_LD_BLW_LBLW_NOZ_EXA_USG_GFL
+,SM_LD_BLW_LBLW_NOZ_EXA_UGSTP
+,SM_LD_LBLW_NOZ_USG_MITDS_CD
+,SM_LD_LBLW_NITB_RMAT_U_OPDE
+,SM_LD_LBLW_NITB_RMAT_U_CODT
+,SM_LD_LBLW_NOZ_ITUB_RMAT_USG		
+FROM POSM2D.TB_M2DB02_C_BOFBLWL010
+WHERE OPER_FLAG=#{operFlag}  AND FAC_OP_CD_N =#{facOpCdN} AND MTL_NO=#{mtlNo}
+	 ]]></select>
+	<select id="SteelRmatPumSteelInfo"
+		resultType="com.posco.mes3.m2drq0.domain.dto.bof.SteelRmatPumSteelDto"><![CDATA[
+SELECT OPER_FLAG,FAC_OP_CD_N,RMAT_MAN_ITEM_DESC_CD_N,START_ACTIVE_DATE,CC_CODE
+      ,RMAT_USE_YIELD,RMAT_MAN_ITEM_DESC_CD_OPR_NAM,ASSEMBLY_ITEM_NUMBER,SUB_INVENTORY_CODE
+      ,MRMAT_SUB_RMAT_TP,RMAT_USE_TP,SM_RMAT_ITEM_CLASS_TP,WORKS_CODE,SM_RMAT_ITEM_DESC_CD
+      ,SM_MAT_USE_SPEC,RMAT_MAN_ITEM_VALUE_OCCUR_TP,ASSEMBLY_ITEM_NUMBER_N,COMPONENT_SUBINVENTORY_N
+FROM (
+SELECT 
+   A.OPER_FLAG,
+   A.FAC_OP_CD_N AS FAC_OP_CD_N,
+   A.RMAT_MAN_ITEM_DESC_CD_N,
+   A.START_ACTIVE_DATE,
+   E.OPERATION_CODE1 AS CC_CODE,
+   A.RMAT_USE_YIELD,
+   A.RMAT_MAN_ITEM_DESC_CD_OPR_NAM,
+   B.ASSEMBLY_ITEM_NUMBER,
+   B.SUB_INVENTORY_CODE,
+   C.MRMAT_SUB_RMAT_TP,
+   B.RMAT_USE_TP,
+   A.SM_RMAT_ITEM_CLASS_TP,
+   A.WORKS_CODE,
+   A.SM_RMAT_ITEM_DESC_CD,
+   A.SM_MAT_USE_SPEC,
+   A.RMAT_MAN_ITEM_VALUE_OCCUR_TP,
+   B.ASSEMBLY_ITEM_NUMBER_1 AS ASSEMBLY_ITEM_NUMBER_N,
+   B.COMPONENT_SUBINVENTORY_N
+ FROM POSMAST.VI_M00_R_PUM_STEEL A,
+   POSMAST.VI_M00_R_VENDOR_ITEMS B,
+   POSMAST.VI_M00_R_PUM_VENDOR_R C,  
+   POSMAST.VI_M00_M00A0001 E  
+ WHERE A.ORGANIZATION_ID = B.ORGANIZATION_ID
+   AND A.RMAT_MAN_ITEM_DESC_CD_N = B.VENDOR_ITEM
+   AND A.ORGANIZATION_ID = C.ORGANIZATION_ID
+   AND A.RMAT_MAN_ITEM_DESC_CD_N = C.VENDOR_ITEM
+   AND A.OPER_FLAG = E.OPER_FLAG
+   AND A.FAC_OP_CD_N = E.FAC_OP_CD_N
+   AND E.OPERATION_CODE1 = C.CC_CODE
+   AND E.OPER_FLAG =#{operFlag}
+   AND E.FAC_OP_CD_N = #{facOpCdN}
+   AND A.RMAT_MAN_ITEM_DESC_CD_N  = #{rmatManItemDescCdN}
+   ORDER BY A.RMAT_MAN_ITEM_DESC_CD_N,A.START_ACTIVE_DATE DESC
+)   
+WHERE ROWNUM = 1
+	 ]]></select>
+	<select id="SteelRmatPumSteelInfoList"
+		resultType="com.posco.mes3.m2drq0.domain.dto.bof.SteelRmatPumSteelDto"><![CDATA[
+SELECT OPER_FLAG,FAC_OP_CD_N,RMAT_MAN_ITEM_DESC_CD_N,START_ACTIVE_DATE,CC_CODE
+      ,RMAT_USE_YIELD,RMAT_MAN_ITEM_DESC_CD_OPR_NAM,ASSEMBLY_ITEM_NUMBER,SUB_INVENTORY_CODE
+      ,MRMAT_SUB_RMAT_TP,RMAT_USE_TP,SM_RMAT_ITEM_CLASS_TP,WORKS_CODE,SM_RMAT_ITEM_DESC_CD
+      ,SM_MAT_USE_SPEC,RMAT_MAN_ITEM_VALUE_OCCUR_TP,ASSEMBLY_ITEM_NUMBER_N,COMPONENT_SUBINVENTORY_N
+FROM (
+SELECT 
+   A.OPER_FLAG,
+   A.FAC_OP_CD_N AS FAC_OP_CD_N,
+   A.RMAT_MAN_ITEM_DESC_CD_N,
+   A.START_ACTIVE_DATE,
+   E.OPERATION_CODE1 AS CC_CODE,
+   A.RMAT_USE_YIELD,
+   A.RMAT_MAN_ITEM_DESC_CD_OPR_NAM,
+   B.ASSEMBLY_ITEM_NUMBER,
+   B.SUB_INVENTORY_CODE,
+   C.MRMAT_SUB_RMAT_TP,
+   B.RMAT_USE_TP,
+   A.SM_RMAT_ITEM_CLASS_TP,
+   A.WORKS_CODE,
+   A.SM_RMAT_ITEM_DESC_CD,
+   A.SM_MAT_USE_SPEC,
+   A.RMAT_MAN_ITEM_VALUE_OCCUR_TP,
+   B.ASSEMBLY_ITEM_NUMBER_1 AS ASSEMBLY_ITEM_NUMBER_N,
+   B.COMPONENT_SUBINVENTORY_N,
+   ROW_NUMBER() OVER(PARTITION BY E.OPER_FLAG,E.FAC_OP_CD_N,A.RMAT_MAN_ITEM_DESC_CD_N ORDER BY A.RMAT_MAN_ITEM_DESC_CD_N,A.START_ACTIVE_DATE DESC) AS RN
+ FROM POSMAST.VI_M00_R_PUM_STEEL A,
+   POSMAST.VI_M00_R_VENDOR_ITEMS B,
+   POSMAST.VI_M00_R_PUM_VENDOR_R C,  
+   POSMAST.VI_M00_M00A0001 E  
+ WHERE A.ORGANIZATION_ID = B.ORGANIZATION_ID
+   AND A.RMAT_MAN_ITEM_DESC_CD_N = B.VENDOR_ITEM
+   AND A.ORGANIZATION_ID = C.ORGANIZATION_ID
+   AND A.RMAT_MAN_ITEM_DESC_CD_N = C.VENDOR_ITEM
+   AND A.OPER_FLAG = E.OPER_FLAG
+   AND A.FAC_OP_CD_N = E.FAC_OP_CD_N
+   AND E.OPERATION_CODE1 = C.CC_CODE
+   AND E.OPER_FLAG =#{operFlag}
+   AND E.FAC_OP_CD_N = #{facOpCdN}
+)   
+WHERE RN = 1
+	 ]]></select>
+	<select id="SteelLdFceBlwHeaderVO"
+		resultType="com.posco.mes3.m2drq0.domain.dto.bof.SteelLdFceBlwHeaderDto"><![CDATA[
+SELECT 
+       A.MTL_NO                                  --강번
+      ,A.PRP_CHARGE_NO1                          --준비강번
+      ,DECODE(D.MTL_NO,NULL,'N','Y') FURNACE_DP  --예비취련여부
+      ,A.PLAN_CHARGE_NO                          --예정번호
+      ,A.MOLTEN_STEEL_CHAR_CD                    --용강특성코드
+      ,A.SM_STEEL_GRD                            --출강목표
+      ,A.SM_2ND_RFN_CD                           --2차정련지시
+      ,B.SPECIFICATION_CD_N                        --규격
+      ,A.CHARGE_PS_OP_CD                         --Charge통과공정코드
+      ,A.TOT_CH_QT                               --전장입량
+      ,C.CH_LADEL_IR_RPR_QT                      --용선량
+      ,A.SCR_T_CH_QT                             --Scrap총장입량
+      ,A.RTN_RE_CH_M_STE_QT                      --반송재장입용강량
+      ,A.RTN_CH_NO                               --반송Charge번호
+      ,C.IR_RDY_RPR_AF_IR_TM1                    --용선온도
+      ,A.CH_HMR                                  --HMR
+      ,A.FCE_NUM                                 --로번호
+      ,A.TRS_F									 --사전송여부
+      ,E.LAST_UPDATE_PROGRAM_ID
+      ,E.LAST_UPDATED_OBJECT_ID
+      ,TO_CHAR(E.LAST_UPDATE_TIMESTAMP,'YYYY-MM-DD HH24:MI:SS') LAST_UPDATE_TIMESTAMP
+      ,F.MTL_NO SM_DPF_MTL_NO
+      ,F.SM_DPF_PRC_SNUM
+      ,F.TOT_CH_QT SM_DPF_TOT_CH_QT
+      ,F.SM_DPF_CH_HMQ
+      ,F.SM_DPF_MTAP_HMQ	                    --제강탈린로출탕용선량
+      ,F.SM_DPF_T_SCR_USG
+      ,F.CH_HMR SM_DPF_CH_HMR
+      ,A.MOLTEN_STEEL_CHAR_CD_N                    --용강특성코드(신항목)
+      ,A.SM_STEEL_GRD_N                            --출강목표(신항목)
+      ,A.SM_1ST_REF_RTN_SRCH_CH_EN_F --제강1차정련반송용강재장입종료여부
+      ,A.SAL_HMN_PDT_TP	--판매고Mn제품구분
+      ,A.SM_FE_BAS_A_CH_QT
+  FROM POSM2D.TB_M2DC01_C_CHMTL010 A,
+       POSM2D.TB_M2DC01_C_CHORD010 B,
+       POSM2D.TB_M2DB01_C_IRPRP010 C,
+       POSM2D.TB_M2DB02_C_BOFDP010 D,
+       POSM2D.TB_M2DB02_C_BOF010 E,
+       POSM2D.TB_M2DB02_C_DPF010 F     
+ WHERE A.MTL_NO = B.MTL_NO(+)
+   AND A.PRP_CHARGE_NO1 = C.MTL_NO(+)
+   AND A.PRP_CHARGE_NO1 = D.MTL_NO(+)
+   AND A.MTL_NO = E.MTL_NO(+)
+   AND A.PRP_CHARGE_NO1 = F.MTL_NO(+)
+   AND A.OPER_FLAG = #{operFlag}
+   AND A.FAC_OP_CD_N =#{facOpCdN}
+   AND A.MTL_NO = #{mtlNo}
+   AND (A.PRP_CHARGE_NO1 IS NOT NULL OR A.RTN_CH_NO IS NOT NULL)
+	 ]]></select>
+	<select id="SteelLdFceRmatUseHeaderVO"
+		resultType="com.posco.mes3.m2drq0.domain.dto.bof.SteelLdFceRmatUseHeaderDto"><![CDATA[
+SELECT /*+ M22 UI m22d20e040 전로원료사용량관리 SteelLdFceRmatUseHeaderVO designedBy 김도균 createdBy 김도균 */
+       A.PRP_CHARGE_NO1                          --준비강번
+      ,DECODE(C.MTL_NO,NULL,'N','Y') FURNACE_DP  --예비취련여부
+      ,A.PLAN_CHARGE_NO                          --예정번호
+      ,A.MOLTEN_STEEL_CHAR_CD_N                    --용강특성코드
+      ,A.SM_STEEL_GRD_N                            --출강목표
+      ,A.SM_2ND_RFN_CD                           --2차정련지시
+      ,B.SPECIFICATION_CD_N                       --규격
+      ,A.FCE_NUM                                 --로번호
+      ,A.TRS_F                                   --전송여부
+      ,A.SM_FEPW_OP_CDDT_ISQ --제강Fe분말공정지원용강량
+      ,A.SM_1ST_REF_RTN_SRCH_CH_EN_F --제강1차정련반송용강재장입종료여부
+      ,A.SM_FE_BAS_A_CH_QT
+  FROM POSM2D.TB_M2DC01_C_CHMTL010 A
+      ,POSM2D.TB_M2DC01_C_CHORD010 B
+      ,POSM2D.TB_M2DB02_C_BOFBLW010 C
+ WHERE A.MTL_NO = B.MTL_NO(+)
+   AND A.PRP_CHARGE_NO1 = C.MTL_NO(+)
+   AND A.OPER_FLAG = #{operFlag}
+   AND A.FAC_OP_CD_N = #{facOpCdN}
+   AND A.MTL_NO = #{mtlNo}
+   AND (A.PRP_CHARGE_NO1 IS NOT NULL OR A.RTN_CH_NO IS NOT NULL)
+	 ]]></select>
+	<select id="SteelLdFceRmatUseVO"
+		resultType="com.posco.mes3.m2drq0.domain.dto.bof.SteelLdFceRmatUseDto"><![CDATA[
+SELECT /*+ M22 UI m22d20e040 전로원료사용량관리 SteelLdFceRmatUseVO designedBy 허철호 createdBy 진교윤 */
+       SM_RMAT_THW_TM_TP_CD       --투입구간
+      ,RMAT_MAN_ITEM_DESC_CD_N      --품명코드
+      ,RMAT_MAN_ITEM_DESC_CD_OPR_NAM  --원료대표품명코드명
+      ,SM_RMAT_THW_QT             --투입량
+      ,SM_RMAT_THW_SAT_DT         --제강원료투입개시일시
+      ,SM_RMAT_THW_DN_DT          --제강원료투입완료일시
+      ,TO_CHAR(SM_RMAT_THW_SAT_DT,'HH24:MI') MIN_SM_RMAT_THW_SAT_DT  --제강원료투입개시일시(시분)
+      ,TO_CHAR(SM_RMAT_THW_DN_DT,'HH24:MI') MIN_SM_RMAT_THW_DN_DT    --제강원료투입완료일시(시분)
+      ,TO_CHAR(SM_RMAT_THW_SAT_DT,'YYYY-MM-DD HH24:MI:SS') FULL_SM_RMAT_THW_SAT_DT  --제강원료투입개시일시(Full)
+      ,TO_CHAR(SM_RMAT_THW_DN_DT,'YYYY-MM-DD HH24:MI:SS') FULL_SM_RMAT_THW_DN_DT    --제강원료투입완료일시(Full)
+      ,MRMAT_SUB_RMAT_TP          --주부원료구분
+      ,ASSEMBLY_ITEM_NUMBER       --생산Item코드
+      ,CC_CODE                    --CostCenter
+      ,SUB_INVENTORY_CODE         --SubInventoryCode
+  FROM (SELECT A.SM_RMAT_THW_TM_TP_CD
+              ,A.RMAT_MAN_ITEM_DESC_CD_N
+              ,B.RMAT_MAN_ITEM_DESC_CD_OPR_NAM
+              ,A.SM_RMAT_THW_QT
+              ,A.SM_RMAT_THW_SAT_DT
+              ,A.SM_RMAT_THW_DN_DT
+              ,A.MRMAT_SUB_RMAT_TP
+              ,B.ASSEMBLY_ITEM_NUMBER
+              ,B.CC_CODE
+              ,B.SUB_INVENTORY_CODE
+              ,RANK() OVER (PARTITION BY B.RMAT_MAN_ITEM_DESC_CD_N ORDER BY B.START_ACTIVE_DATE DESC) RN
+          FROM POSM2D.TB_M2DC01_C_RMAT010 A
+               ,(select Distinct a.ORGANIZATION_ID,
+                   a.OPER_FLAG,
+                   a.FAC_OP_CD_N,
+                   a.RMAT_MAN_ITEM_DESC_CD_N ,
+                   a.START_ACTIVE_DATE,
+                   e.OPERATION_CODE1 as CC_CODE,
+                   a.RMAT_USE_YIELD,
+                   a.RMAT_MAN_ITEM_DESC_CD_OPR_NAM,
+                   b.ASSEMBLY_ITEM_NUMBER,
+                   b.SUB_INVENTORY_CODE,
+                   c.MRMAT_SUB_RMAT_TP,
+                   b.RMAT_USE_TP,
+                   a.SM_RMAT_ITEM_CLASS_TP,
+                   a.WORKS_CODE,
+                   a.SM_RMAT_ITEM_DESC_CD,
+                   a.SM_MAT_USE_SPEC,
+                   0 as RMAT_MGT_REDUCT_RT1,
+                   0 as RMAT_MGT_REDUCT_RT2,
+                   a.RMAT_MAN_ITEM_VALUE_OCCUR_TP,
+                   b.ASSEMBLY_ITEM_NUMBER_1 as ASSEMBLY_ITEM_NUMBER_N,
+                   b.COMPONENT_SUBINVENTORY_N
+                 from posmast.VI_M00_R_PUM_STEEL a,
+                   posmast.VI_M00_R_VENDOR_ITEMS b,
+                   posmast.VI_M00_R_PUM_VENDOR_R c,  
+                   posmast.vi_m00_m00a0001 e  
+                 where a.ORGANIZATION_ID = b.ORGANIZATION_ID
+                   and a.RMAT_MAN_ITEM_DESC_CD_N = b.VENDOR_ITEM
+                   and a.ORGANIZATION_ID = c.ORGANIZATION_ID
+                   and a.RMAT_MAN_ITEM_DESC_CD_N = c.VENDOR_ITEM
+                   and a.OPER_FLAG = e.OPER_FLAG
+                   and a.FAC_OP_CD_N = e.FAC_OP_CD_N
+                   and e.OPERATION_CODE1 = c.CC_CODE) B
+                WHERE DECODE(A.WORKS_CODE,'P',6,9) = B.ORGANIZATION_ID
+                AND A.OPER_FLAG = B.OPER_FLAG
+                AND A.FAC_OP_CD_N = B.FAC_OP_CD_N
+                AND A.RMAT_MAN_ITEM_DESC_CD_N = B.RMAT_MAN_ITEM_DESC_CD_N
+                AND A.OPER_FLAG =  #{operFlag}
+                AND A.FAC_OP_CD_N =  #{facOpCdN}
+                AND A.MTL_NO =  #{mtlNo}
+                AND A.AC_OCR_PAS_NUM = '1'
+                AND A.LD_FCE_BLW_PUR_TP =  #{ldFceBlwPurTp}
+                AND A.MRMAT_SUB_RMAT_TP =  #{mRmatSubRmatTp}
+                AND A.DATA_END_STATUS IS NULL
+                AND B.START_ACTIVE_DATE <= SYSDATE) B
+ WHERE RN = 1
+ ORDER BY SM_RMAT_THW_TM_TP_CD, RMAT_MAN_ITEM_DESC_CD_N
+	 ]]></select>
+	<select id="SteelLdFceRmatUseTotVO"
+		resultType="com.posco.mes3.m2drq0.domain.dto.bof.SteelLdFceRmatUseTotDto"><![CDATA[
+SELECT /*+ M22 UI m22d20e040 전로원료사용량관리 SteelLdFceRmatUseTotVO designedBy 허철호 createdBy 박민영 */
+       RMAT_MAN_ITEM_DESC_CD_N               -- 원료대표품명코드
+      ,RMAT_MAN_ITEM_DESC_CD_NAM           -- 원료대표품명코드명
+      ,SUM(SM_RMAT_THW_QT) SM_RMAT_THW_QT  -- 제강원료투입량
+  FROM POSM2D.TB_M2DC01_C_RMAT010 
+ WHERE OPER_FLAG = #{operFlag}
+   AND FAC_OP_CD_N =#{facOpCdN}
+   AND MTL_NO = #{mtlNo}
+   AND AC_OCR_PAS_NUM = '1'
+   AND LD_FCE_BLW_PUR_TP =  #{ldFceBlwPurTp}
+   AND MRMAT_SUB_RMAT_TP = #{mRmatSubRmatTp}
+   AND DATA_END_STATUS IS NULL
+ GROUP BY RMAT_MAN_ITEM_DESC_CD_N, RMAT_MAN_ITEM_DESC_CD_NAM
+ ORDER BY RMAT_MAN_ITEM_DESC_CD_N, RMAT_MAN_ITEM_DESC_CD_NAM
+	 ]]></select>
+	<select id="SteelUIPumSteelVO"
+		resultType="com.posco.mes3.m2drq0.domain.dto.bof.SteelUIPumSteelDto"><![CDATA[
+SELECT /*+ M22 UI 제강공통 원료사용량관리 SteelPumSteelVO designedBy 김도균 createdBy 김도균 */
+       DISTINCT RMAT_MAN_ITEM_DESC_CD_N  --원료대표품명코드
+      ,RMAT_MAN_ITEM_DESC_CD_OPR_NAM  --원료대표품명코드명
+      ,MRMAT_SUB_RMAT_TP          --주부원료구분
+      ,ASSEMBLY_ITEM_NUMBER       --생산Item코드
+      ,CC_CODE                    --CostCenter
+      ,SUB_INVENTORY_CODE         --SubInventoryCode
+FROM (select Distinct a.ORGANIZATION_ID,
+       a.OPER_FLAG,
+       a.FAC_OP_CD_N,
+       a.RMAT_MAN_ITEM_DESC_CD_N ,
+       a.START_ACTIVE_DATE,
+       e.OPERATION_CODE1 as CC_CODE,
+       a.RMAT_USE_YIELD,
+       a.RMAT_MAN_ITEM_DESC_CD_OPR_NAM,
+       b.ASSEMBLY_ITEM_NUMBER,
+       b.SUB_INVENTORY_CODE,
+       c.MRMAT_SUB_RMAT_TP,
+       b.RMAT_USE_TP,
+       a.SM_RMAT_ITEM_CLASS_TP,
+       a.WORKS_CODE,
+       a.SM_RMAT_ITEM_DESC_CD,
+       a.SM_MAT_USE_SPEC,
+       0 as RMAT_MGT_REDUCT_RT1,
+       0 as RMAT_MGT_REDUCT_RT2,
+       a.RMAT_MAN_ITEM_VALUE_OCCUR_TP,
+       b.ASSEMBLY_ITEM_NUMBER_1 as ASSEMBLY_ITEM_NUMBER_N,
+       b.COMPONENT_SUBINVENTORY_N
+     from posmast.VI_M00_R_PUM_STEEL a,
+       posmast.VI_M00_R_VENDOR_ITEMS b,
+       posmast.VI_M00_R_PUM_VENDOR_R c,  
+       posmast.vi_m00_m00a0001 e  
+     where a.ORGANIZATION_ID = b.ORGANIZATION_ID
+       and a.RMAT_MAN_ITEM_DESC_CD_N = b.VENDOR_ITEM
+       and a.ORGANIZATION_ID = c.ORGANIZATION_ID
+       and a.RMAT_MAN_ITEM_DESC_CD_N = c.VENDOR_ITEM
+       and a.OPER_FLAG = e.OPER_FLAG
+       and a.FAC_OP_CD_N = e.FAC_OP_CD_N
+       and e.OPERATION_CODE1 = c.CC_CODE) A
+ WHERE DECODE(A.ORGANIZATION_ID,6,'P','K') = #{worksCode}
+   AND FAC_OP_CD_N  = #{facOpCdN} 
+   AND MRMAT_SUB_RMAT_TP  LIKE DECODE( #{mRmatSubRmatTp},'ALL','%', #{mRmatSubRmatTp}) ||'%'
+   AND MRMAT_SUB_RMAT_TP < 'D'
+   AND SM_RMAT_ITEM_CLASS_TP != 'HM'
+   AND RMAT_MAN_ITEM_VALUE_OCCUR_TP = 'Y'
+ ORDER BY RMAT_MAN_ITEM_DESC_CD_N
+	 ]]></select>
+	<select id="SteelLdFceProcessVO"
+		resultType="com.posco.mes3.m2drq0.domain.dto.bof.SteelLdFceProcessDto"><![CDATA[
+SELECT  M_STE_WK_YRD_NO_SCRAP, OP_DN_DT_SCRAP
+        ,M_STE_WK_YRD_NO
+        ,OP_DN_DT1
+        ,OP_SAT_DT21
+        ,OP_DN_DT31
+        ,OP_SAT_DT22
+        ,OP_DN_DT32
+        ,OP_SAT_DT23
+        ,OP_DN_DT33
+        ,OP_SAT_DT24
+        ,OP_DN_DT34
+        ,OP_SAT_DT4
+        ,STE_MSE_TM1
+        ,STE_MSE_OX_DEN1
+        ,FCE_USE_TIM
+        ,FCE_TAPHOLE_USE_TIM
+        ,OP_DN_DT5
+        ,OP_DN_DT_DSLAG
+FROM 
+(
+SELECT /*+ M22 UI m22d20e010 전로공정진행Backup SteelLdFceProcessVO designedBy 김도균 createdBy 김도균 */
+       MIN(DECODE(OPERATION_TRACKING_CD,'L01',M_STE_WK_YRD_NO))
+       M_STE_WK_YRD_NO_SCRAP      --고철장입 전로번호
+      ,MIN(DECODE(OPERATION_TRACKING_CD,'L01',OP_DN_DT,TO_DATE(NULL)))
+       OP_DN_DT_SCRAP           --고철장입완료시각
+      ,MIN(DECODE(OPERATION_TRACKING_CD,'L1',M_STE_WK_YRD_NO))
+       M_STE_WK_YRD_NO      --전로번호
+      ,MIN(DECODE(OPERATION_TRACKING_CD,'L1',OP_DN_DT,TO_DATE(NULL)))
+       OP_DN_DT1            --장입완료시각
+      ,MIN(DECODE(OPERATION_TRACKING_CD,'L2',DECODE(AC_OCR_PAS_NUM,'1',OP_SAT_DT,TO_DATE(NULL)),TO_DATE(NULL)))
+       OP_SAT_DT21          --본취련개시 -> 1차취련개시
+      ,MIN(DECODE(OPERATION_TRACKING_CD,'L3',DECODE(AC_OCR_PAS_NUM,'1',OP_DN_DT,TO_DATE(NULL)),TO_DATE(NULL)))
+       OP_DN_DT31           --본취련완료 -> 1차취련완료
+      ,MIN(DECODE(OPERATION_TRACKING_CD,'L2',DECODE(AC_OCR_PAS_NUM,'2',OP_SAT_DT,TO_DATE(NULL)),TO_DATE(NULL)))
+       OP_SAT_DT22          --재취련개시 -> 2차취련개시
+      ,MIN(DECODE(OPERATION_TRACKING_CD,'L3',DECODE(AC_OCR_PAS_NUM,'2',OP_DN_DT,TO_DATE(NULL)),TO_DATE(NULL)))
+       OP_DN_DT32           --재취련완료 -> 2차취련완료
+      ,MIN(DECODE(OPERATION_TRACKING_CD,'L2',DECODE(AC_OCR_PAS_NUM,'3',OP_SAT_DT,TO_DATE(NULL)),TO_DATE(NULL)))
+       OP_SAT_DT23          --3차취련개시
+      ,MIN(DECODE(OPERATION_TRACKING_CD,'L3',DECODE(AC_OCR_PAS_NUM,'3',OP_DN_DT,TO_DATE(NULL)),TO_DATE(NULL)))
+       OP_DN_DT33           --3차취련완료
+      ,MIN(DECODE(OPERATION_TRACKING_CD,'L2',DECODE(AC_OCR_PAS_NUM,'4',OP_SAT_DT,TO_DATE(NULL)),TO_DATE(NULL)))
+       OP_SAT_DT24          --4차취련개시
+      ,MIN(DECODE(OPERATION_TRACKING_CD,'L3',DECODE(AC_OCR_PAS_NUM,'4',OP_DN_DT,TO_DATE(NULL)),TO_DATE(NULL)))
+       OP_DN_DT34           --4차취련완료
+      ,MIN(DECODE(OPERATION_TRACKING_CD,'L4',OP_SAT_DT,TO_DATE(NULL)))
+       OP_SAT_DT4           --출강개시
+      ,MIN(DECODE(OPERATION_TRACKING_CD,'L4',STE_MSE_TM1))
+       STE_MSE_TM1          --종점온도
+      ,MIN(DECODE(OPERATION_TRACKING_CD,'L4',STE_MSE_OX_DEN1))
+       STE_MSE_OX_DEN1      --종점산소
+      ,MIN(DECODE(OPERATION_TRACKING_CD,'L4',FCE_USE_TIM))
+       FCE_USE_TIM          --로령
+      ,MIN(DECODE(OPERATION_TRACKING_CD,'L4',FCE_TAPHOLE_USE_TIM))
+       FCE_TAPHOLE_USE_TIM  --출강구수명
+      ,MIN(DECODE(OPERATION_TRACKING_CD,'L5',OP_DN_DT,TO_DATE(NULL)))
+       OP_DN_DT5            --출강완료
+      ,MIN(DECODE(OPERATION_TRACKING_CD,'L6',OP_DN_DT,TO_DATE(NULL)))
+       OP_DN_DT_DSLAG            --배재완료
+      ,MIN(LAST_UPDATE_TIMESTAMP)
+       LAST_UPDATE_TIMESTAMP            
+
+   FROM POSM2D.TB_M2DC01_E_OPPRG010
+ WHERE OPER_FLAG = #{operFlag}
+   AND FAC_OP_CD_N =#{facOpCdN}
+   AND MTL_NO = #{mtlNo}  
+   AND OPERATION_TRACKING_CD LIKE 'L%'
+   GROUP BY MTL_NO, M_STE_WK_YRD_NO
+   ORDER BY LAST_UPDATE_TIMESTAMP DESC
+)
+WHERE ROWNUM = 1
+	 ]]></select>
+	<select id="SteelLdFceProcessHeaderVO"
+		resultType="com.posco.mes3.m2drq0.domain.dto.bof.SteelLdFceProcessHeaderDto"><![CDATA[
+SELECT /*+ M22 UI m22d20e010 전로공정진행Backup SteelLdFceProcessHeaderVO designedBy 김도균 createdBy 김도균 */
+       A.MOLTEN_STEEL_CHAR_CD_N --용강특성코드
+      ,A.SM_STEEL_GRD_N         --출강목표번호
+      ,A.SM_2ND_RFN_CD        --2차정련지시
+      ,A.PLAN_CHARGE_NO       --예정번호
+      ,DECODE(A.PRP_CHARGE_NO1,NULL,DECODE(A.RTN_CH_NO,NULL,A.MTL_NO),A.PRP_CHARGE_NO1) PRP_CHARGE_NO --준비강번
+      ,A.RTN_CH_NO            --반송Charge번호
+      ,DECODE(A.RTN_CH_NO,NULL,NULL,A.RTN_RE_CH_M_STE_QT) RTN_RE_CH_M_STE_QT --반송재장입용강량
+      ,A.CH_IR_QT             --용선량
+      ,A.SCR_T_CH_QT          --Chute장입량
+      ,A.TOT_CH_QT            --전장입량
+      ,B.SM_DPF_MTAP_HMQ	  --제강탈린로출탕용선량
+  FROM POSM2D.TB_M2DC01_C_CHMTL010 A
+  	  ,POSM2D.TB_M2DB02_C_DPF010 B
+ WHERE A.OPER_FLAG =#{operFlag}
+   AND A.FAC_OP_CD_N =#{facOpCdN}
+   AND A.MTL_NO =#{mtlNo}
+   AND (A.PRP_CHARGE_NO1 IS NOT NULL OR A.RTN_CH_NO IS NOT NULL)
+   AND A.PRP_CHARGE_NO1 = B.MTL_NO(+)
+	 ]]></select>
+	<select id="SteelMeltedIronHeaderVO"
+		resultType="com.posco.mes3.m2drq0.domain.dto.bof.SteelMeltedIronHeaderDto"><![CDATA[
+SELECT /*+ M22 UI m22d10e100 강번별용선수입실적관리(Header) SteelMeltedIronHeaderVO designedBy 허철호 createdBy 김정중 */
+       B.MTL_NO                                      --장입강번
+      ,B.PLAN_CHARGE_NO       M_PLAN_CHARGE_NO       --(MNL)예정번호
+      ,B.SM_STEEL_GRD_N       M_SM_STEEL_GRD_N         --(MNL)출강목표번호
+      ,B.SM_2ND_RFN_CD        M_SM_2ND_RFN_CD        --(MNL)2차정련지시
+      ,B.MOLTEN_STEEL_CHAR_CD_N M_MOLTEN_STEEL_CHAR_CD_N --(MNL)용강특성코드
+      ,C.PLAN_CHARGE_NO       W_PLAN_CHARGE_NO       --(WMT)예정번호
+      ,C.SM_STEEL_GRD_N       W_SM_STEEL_GRD_N         --(WMT)출강목표번호
+      ,C.SM_2ND_RFN_CD        W_SM_2ND_RFN_CD        --(WMT)2차정련지시
+      ,C.MOLTEN_STEEL_CHAR_CD_N W_MOLTEN_STEEL_CHAR_CD_N --(WMT)용강특성코드
+      ,C.SM_TLC_CONS_MIX_STAT_TP --제강TLC성분Mixing상태구분
+      ,(SELECT CD_V_MEANING
+          FROM VI_M00_CODE_ACCESS
+         WHERE CD_TP = 'SM_TLC_CONS_MIX_STAT_TP'
+           AND CATEGORY_GROUP_NM = 'PC0000'
+           AND CD_V = C.SM_TLC_CONS_MIX_STAT_TP) SM_TLC_CONS_MIX_STAT_TP_DESC
+      ,C.SM_TLC_CONS_MIX_PI_CL_TMP --제강TLC성분Mixing용선계산온도
+      ,C.SM_LD_CH_LD_SLU_STK_STAT_TP --제강전로장입Ladle지금부착상태구분
+	  ,C.SM_PI_RSV_PRC_CH_EMLD_WGT --제강용선예비처리장입공Ladle중량
+	  ,C.SM_PI_RSV_PRC_CLDE_SHT_TM --제강용선예비처리장입Ladle보열시간
+  FROM (SELECT #{operFlag} OPER_FLAG, SUBSTR(#{facOpCdN},1,1) FAC_OP_CD_N, #{mtlNo} MTL_NO FROM DUAL) A
+      ,POSM2D.TB_M2DC01_C_CHMTL010 B
+      ,POSM2D.TB_M2DB01_C_IRPRP010 C
+ WHERE A.OPER_FLAG = B.OPER_FLAG(+)
+   AND A.FAC_OP_CD_N||'L1' = B.FAC_OP_CD_N(+)
+   AND A.MTL_NO = B.PRP_CHARGE_NO1(+)
+   AND A.OPER_FLAG = C.OPER_FLAG(+)
+   AND A.FAC_OP_CD_N||'D1' = C.FAC_OP_CD_N(+)
+   AND A.MTL_NO = C.MTL_NO(+)
+   AND ROWNUM = 1
+	 ]]></select>
+	<select id="SteelPrpChargeNoVO"
+		resultType="com.posco.mes3.m2drq0.domain.dto.bof.SteelPrpChargeNoDto"><![CDATA[
+WITH BD AS
+(
+  SELECT /*+ M22 UI m22d20e010 준비강번선택 SteelPrpChargeNoVO designedBy 허철호 createdBy 진교윤 */
+       #{operFlag} OPER_FLAG, #{facOpCdN} FAC_OP_CD_N, #{mtlNo} MTL_NO FROM DUAL
+)
+SELECT A.PRP_CHARGE_NO1  --준비강번
+      ,B.MTL_NO          --장입강번
+      ,A.PLAN_CHARGE_NO  --예정번호
+      --,A.SM_STEEL_GRD    --출강목표번호
+  FROM (SELECT PRP_CHARGE_NO1
+              ,PLAN_CHARGE_NO
+              ,SM_STEEL_GRD
+              ,ROWNUM RN
+          FROM (  SELECT MTL_NO PRP_CHARGE_NO1, PLAN_CHARGE_NO, SM_STEEL_GRD
+                  FROM (SELECT A.MTL_NO, A.PLAN_CHARGE_NO, A.SM_STEEL_GRD
+                          FROM POSM2D.TB_M2DB01_C_IRPRP010 A
+                              ,BD B
+                         WHERE A.OPER_FLAG = B.OPER_FLAG
+                           AND SUBSTR(A.FAC_OP_CD_N,1,1) = SUBSTR(B.FAC_OP_CD_N,1,1)
+                           AND A.TLC_IR_ISS_SAT_DT1 > SYSDATE - 30
+                         ORDER BY A.TLC_IR_ISS_SAT_DT1 DESC
+                         )
+                 WHERE ROWNUM <= 20)
+         WHERE ROWNUM <= 20) A
+      ,POSM2D.TB_M2DC01_C_CHMTL010 B
+ WHERE A.PRP_CHARGE_NO1 = B.PRP_CHARGE_NO1(+)
+ UNION
+ SELECT A.PRP_CHARGE_NO1  --준비강번
+      ,B.MTL_NO          --장입강번
+      ,A.PLAN_CHARGE_NO  --예정번호
+      --,A.SM_STEEL_GRD    --출강목표번호
+  FROM (SELECT PRP_CHARGE_NO1
+              ,PLAN_CHARGE_NO
+              ,SM_STEEL_GRD
+              ,ROWNUM RN
+          FROM (  SELECT MTL_NO PRP_CHARGE_NO1, PLAN_CHARGE_NO, SM_STEEL_GRD
+                  FROM (SELECT A.MTL_NO, A.PLAN_CHARGE_NO, A.SM_STEEL_GRD
+                          FROM POSM2D.TB_M2DB01_C_IRPRP010 A
+                              ,BD B
+                         WHERE A.OPER_FLAG = B.OPER_FLAG
+                           AND SUBSTR(A.FAC_OP_CD_N,1,1) = SUBSTR(B.FAC_OP_CD_N,1,1)
+                           AND A.TLC_IR_ISS_SAT_DT1 > SYSDATE - 30
+                         ORDER BY A.TLC_IR_ISS_SAT_DT1 DESC)
+                 WHERE ROWNUM <= 20)
+         WHERE ROWNUM <= 20) A
+      ,POSM2D.TB_M2DC01_C_CHMTL010 B
+ WHERE A.PRP_CHARGE_NO1 = B.PRP_CHARGE_NO1(+)
+	 ]]></select>
+	<select id="SteelLdFceDpBlwHeaderVO"
+		resultType="com.posco.mes3.m2drq0.domain.dto.bof.SteelLdFceDpBlwHeaderDto"><![CDATA[
+SELECT /*+ M22 UI m22d20e030 전로취련실적관리(탈린) SteelLdFceDpBlwHeaderVO designedBy 허철호 createdBy 진교윤 */
+       B.MTL_NO                                      --장입강번
+      ,B.PLAN_CHARGE_NO       M_PLAN_CHARGE_NO       --(MNL)예정번호
+      ,B.SM_STEEL_GRD_N         M_SM_STEEL_GRD_N         --(MNL)출강목표번호
+      ,B.SM_2ND_RFN_CD        M_SM_2ND_RFN_CD        --(MNL)2차정련지시
+      ,B.MOLTEN_STEEL_CHAR_CD_N M_MOLTEN_STEEL_CHAR_CD_N --(MNL)용강특성코드
+      ,C.PLAN_CHARGE_NO       W_PLAN_CHARGE_NO       --(WMT)예정번호
+      ,C.SM_STEEL_GRD_N         W_SM_STEEL_GRD_N         --(WMT)출강목표번호
+      ,C.SM_2ND_RFN_CD        W_SM_2ND_RFN_CD        --(WMT)2차정련지시
+      ,C.MOLTEN_STEEL_CHAR_CD_N W_MOLTEN_STEEL_CHAR_CD_N --(WMT)용강특성코드
+      ,C.CH_LADEL_IR_RPR_QT                          --장입래들용선수선량
+      ,D.SM_DPF_MTAP_HMQ							 --제강탈린로출탕용선량
+  FROM (SELECT #{operFlag} OPER_FLAG, SUBSTR(#{facOpCdN},1,1) FAC_OP_CD_N, #{mtlNo} MTL_NO FROM DUAL) A
+      ,POSM2D.TB_M2DC01_C_CHMTL010 B
+      ,POSM2D.TB_M2DB01_C_IRPRP010 C
+      ,POSM2D.TB_M2DB02_C_DPF010 D
+ WHERE A.OPER_FLAG = B.OPER_FLAG(+)
+   AND A.FAC_OP_CD_N||'L1' = B.FAC_OP_CD_N(+)
+   AND A.MTL_NO = B.PRP_CHARGE_NO1(+)
+   AND A.OPER_FLAG = C.OPER_FLAG(+)
+   AND A.FAC_OP_CD_N||'D1' = C.FAC_OP_CD_N(+)
+   AND A.MTL_NO = C.MTL_NO(+)
+   AND A.MTL_NO = D.MTL_NO(+)
+   AND ROWNUM = 1
+	 ]]></select>
+	<select id="SteelDpFceProcVO"
+		resultType="com.posco.mes3.m2drq0.domain.dto.bof.SteelDpFceProcDto"><![CDATA[
+SELECT
+/*+ M22 UI m22d80e030 탈린로공정진행Backup SteelDpFceProcVO designedBy 김정중 createdBy 김정중 */
+       MIN(DECODE(OPERATION_TRACKING_CD,'F1',M_STE_WK_YRD_NO))
+       SM_DPF_FCE_NO      	--탈린로번호
+      ,MIN(DECODE(OPERATION_TRACKING_CD,'F1',OP_SAT_DT,TO_DATE(NULL)))
+       SM_DPF_PI_CH_SAT_DT	--탈린로용선장입개시
+      ,MIN(DECODE(OPERATION_TRACKING_CD,'F1',FCE_USE_TIM))
+       SM_DPF_FCE_USE_TIM  	--제강탈린로로사용횟수
+      ,MIN(DECODE(OPERATION_TRACKING_CD,'F1',CH_IR_QT))
+       SM_DPF_CH_HMQ      	--제강탈린로장입용선량
+      ,MIN(DECODE(OPERATION_TRACKING_CD,'F1',SCR_T_CH_QT))
+       SM_DPF_T_SCR_USG    	--제강탈린로총고철사용량
+      ,MIN(DECODE(OPERATION_TRACKING_CD,'F2',DECODE(AC_OCR_PAS_NUM,'1',OP_SAT_DT,TO_DATE(NULL)),TO_DATE(NULL)))
+       SM_DPF_BLW_SAT_DT	--탈린로탈린개시
+      ,MIN(DECODE(OPERATION_TRACKING_CD,'F3',DECODE(AC_OCR_PAS_NUM,'1',OP_DN_DT,TO_DATE(NULL)),TO_DATE(NULL)))
+       SM_DPF_BLW_DN_DT		--탈린로탈린완료
+      ,MIN(DECODE(OPERATION_TRACKING_CD,'F4',OP_SAT_DT,TO_DATE(NULL)))
+       SM_DPF_MTAP_SAT_DT	--탈린로출탕개시
+      ,MIN(DECODE(OPERATION_TRACKING_CD,'F5',OP_DN_DT,TO_DATE(NULL)))
+       SM_DPF_MTAP_DN_DT	--탈린로출탕완료
+  FROM POSM2D.TB_M2DC01_E_OPPRG010
+ WHERE OPER_FLAG = #{operFlag}
+   AND FAC_OP_CD_N = #{facOpCdN}
+   AND MTL_NO =#{mtlNo}
+   AND OPERATION_TRACKING_CD LIKE 'F%'
+	 ]]></select>
+	<select id="SteelLdFceDpProcessHeaderVO"
+		resultType="com.posco.mes3.m2drq0.domain.dto.bof.SteelLdFceDpProcessHeaderDto"><![CDATA[
+SELECT /*+ M22 UI m22d20e015 전로공정진행Backup(탈린) SteelLdFceDpProcessHeaderVO designedBy 허철호 createdBy 진교윤 */
+       B.MTL_NO                                      --장입강번
+      ,B.PLAN_CHARGE_NO       M_PLAN_CHARGE_NO       --(MNL)예정번호
+      ,B.SM_STEEL_GRD_N         M_SM_STEEL_GRD_N         --(MNL)출강목표번호
+      ,B.SM_2ND_RFN_CD        M_SM_2ND_RFN_CD        --(MNL)2차정련지시
+      ,B.MOLTEN_STEEL_CHAR_CD_N M_MOLTEN_STEEL_CHAR_CD_N --(MNL)용강특성코드
+      ,C.PLAN_CHARGE_NO       W_PLAN_CHARGE_NO       --(WMT)예정번호
+      ,C.SM_STEEL_GRD_N         W_SM_STEEL_GRD_N         --(WMT)출강목표번호
+      ,C.SM_2ND_RFN_CD        W_SM_2ND_RFN_CD        --(WMT)2차정련지시
+      ,C.MOLTEN_STEEL_CHAR_CD_N W_MOLTEN_STEEL_CHAR_CD_N --(WMT)용강특성코드
+      ,C.CH_LADEL_IR_RPR_QT   CH_IR_QT               --용선량
+      ,D.SM_DPF_MTAP_HMQ							 --제강탈린로출탕용선량
+  FROM (SELECT  #{operFlag} OPER_FLAG, SUBSTR( #{facOpCdN},1,1) FAC_OP_CD_N,  #{mtlNo} MTL_NO FROM DUAL) A
+      ,POSM2D.TB_M2DC01_C_CHMTL010 B
+      ,POSM2D.TB_M2DB01_C_IRPRP010 C
+      ,POSM2D.TB_M2DB02_C_DPF010 D
+ WHERE A.OPER_FLAG = B.OPER_FLAG(+)
+   AND A.FAC_OP_CD_N ||'L1' = B.FAC_OP_CD_N(+)
+   AND A.MTL_NO = B.PRP_CHARGE_NO1(+)
+   AND A.OPER_FLAG = C.OPER_FLAG(+)
+   AND A.FAC_OP_CD_N||'D1' = C.FAC_OP_CD_N(+)
+   AND A.MTL_NO = C.MTL_NO(+)
+   AND A.MTL_NO = D.MTL_NO(+)
+   AND ROWNUM = 1
+	 ]]></select>
+	<select id="SteelLdFceDpProcessVO"
+		resultType="com.posco.mes3.m2drq0.domain.dto.bof.SteelLdFceDpProcessDto"><![CDATA[
+SELECT /*+ M22 UI m22d20e015 전로공정진행Backup(탈린) SteelLdFceDpProcessVO designedBy 허철호 createdBy 진교윤 */
+       MIN(DECODE(OPERATION_TRACKING_CD,'K1',M_STE_WK_YRD_NO))
+       M_STE_WK_YRD_NO      --전로번호
+      ,MIN(DECODE(OPERATION_TRACKING_CD,'K1',OP_DN_DT,TO_DATE(NULL)))
+       OP_DN_DT1            --장입완료시각
+      ,MIN(DECODE(OPERATION_TRACKING_CD,'K1',SCR_T_CH_QT))
+       SCR_T_CH_QT          --Scrap총장입량
+      ,MIN(DECODE(OPERATION_TRACKING_CD,'K2',DECODE(AC_OCR_PAS_NUM,'1',OP_SAT_DT,TO_DATE(NULL)),TO_DATE(NULL)))
+       OP_SAT_DT21          --본취련개시
+      ,MIN(DECODE(OPERATION_TRACKING_CD,'K3',DECODE(AC_OCR_PAS_NUM,'1',OP_DN_DT,TO_DATE(NULL)),TO_DATE(NULL)))
+       OP_DN_DT31           --본취련완료
+      ,MIN(DECODE(OPERATION_TRACKING_CD,'K2',DECODE(AC_OCR_PAS_NUM,'2',OP_SAT_DT,TO_DATE(NULL)),TO_DATE(NULL)))
+       OP_SAT_DT22          --재취련개시
+      ,MIN(DECODE(OPERATION_TRACKING_CD,'K3',DECODE(AC_OCR_PAS_NUM,'2',OP_DN_DT,TO_DATE(NULL)),TO_DATE(NULL)))
+       OP_DN_DT32           --재취련완료
+      ,MIN(DECODE(OPERATION_TRACKING_CD,'K4',OP_SAT_DT,TO_DATE(NULL)))
+       OP_SAT_DT4           --출강개시
+      ,MIN(DECODE(OPERATION_TRACKING_CD,'K4',STE_MSE_TM1))
+       STE_MSE_TM1          --종점온도
+      ,MIN(DECODE(OPERATION_TRACKING_CD,'K4',STE_MSE_OX_DEN1))
+       STE_MSE_OX_DEN1      --종점산소
+      ,MIN(DECODE(OPERATION_TRACKING_CD,'K4',FCE_USE_TIM))
+       FCE_USE_TIM          --로령
+      ,MIN(DECODE(OPERATION_TRACKING_CD,'K4',FCE_TAPHOLE_USE_TIM))
+       FCE_TAPHOLE_USE_TIM  --출강구수명
+      ,MIN(DECODE(OPERATION_TRACKING_CD,'K5',OP_DN_DT,TO_DATE(NULL)))
+       OP_DN_DT5            --출강완료
+  FROM POSM2D.TB_M2DC01_E_OPPRG010
+ WHERE OPER_FLAG = #{operFlag}
+   AND FAC_OP_CD_N = #{facOpCdN}
+   AND MTL_NO = #{mtlNo}
+   AND OPERATION_TRACKING_CD LIKE 'K%'
+	 ]]></select>
+	<select id="SteelLdFceDpRmatUseHeaderVO"
+		resultType="com.posco.mes3.m2drq0.domain.dto.bof.SteelLdFceDpRmatUseHeaderDto"><![CDATA[
+WITH TT AS
+(
+  SELECT /*+ M22 UI m22d20e020 전로원료사용량관리(탈린) SteelLdFceDpRmatUseHeaderVO designedBy 허철호 createdBy 진교윤 */
+         #{operFlag} OPER_FLAG, SUBSTR(#{facOpCdN},1,1) FAC_OP_CD_N,  #{mtlNo} MTL_NO
+    FROM DUAL
+)
+SELECT A.MTL_NO                 --장입강번
+      ,A.M_PLAN_CHARGE_NO       --(MNL)예정번호
+      ,A.M_SM_STEEL_GRD_N         --(MNL)출강목표번호
+      ,A.M_SM_2ND_RFN_CD        --(MNL)2차정련지시
+      ,A.M_MOLTEN_STEEL_CHAR_CD_N --(MNL)용강특성코드
+      ,B.W_PLAN_CHARGE_NO       --(WMT)예정번호
+      ,B.W_SM_STEEL_GRD_N         --(WMT)출강목표번호
+      ,B.W_SM_2ND_RFN_CD        --(WMT)2차정련지시
+      ,B.W_MOLTEN_STEEL_CHAR_CD_N --(WMT)용강특성코드
+      ,A.FCE_NUM                --로번호
+      ,A.TRS_F                  --전송여부
+  FROM (SELECT CHARGE_NO
+              ,MTL_NO
+              ,DECODE(MTL_NO,NULL,NULL,PLAN_CHARGE_NO      ) M_PLAN_CHARGE_NO
+              ,DECODE(MTL_NO,NULL,NULL,SM_STEEL_GRD_N        ) M_SM_STEEL_GRD_N
+              ,DECODE(MTL_NO,NULL,NULL,SM_2ND_RFN_CD       ) M_SM_2ND_RFN_CD
+              ,DECODE(MTL_NO,NULL,NULL,MOLTEN_STEEL_CHAR_CD_N) M_MOLTEN_STEEL_CHAR_CD_N
+              ,FCE_NUM
+              ,TRS_F
+          FROM (SELECT Y.MTL_NO CHARGE_NO
+                      ,DECODE(X.PRP_CHARGE_NO1,NULL,DECODE(X.RTN_CH_NO,NULL,NULL,X.MTL_NO),X.MTL_NO) MTL_NO
+                      ,X.PLAN_CHARGE_NO
+                      ,X.SM_STEEL_GRD_N
+                      ,X.SM_2ND_RFN_CD
+                      ,X.MOLTEN_STEEL_CHAR_CD_N
+                      ,X.FCE_NUM
+                      ,X.TRS_F
+                  FROM POSM2D.TB_M2DC01_C_CHMTL010 X
+                      ,(SELECT OPER_FLAG, FAC_OP_CD_N||'L1' FAC_OP_CD_N, MTL_NO FROM TT) Y
+                 WHERE X.OPER_FLAG = Y.OPER_FLAG
+                   AND X.FAC_OP_CD_N = Y.FAC_OP_CD_N
+                   AND DECODE(X.PRP_CHARGE_NO1,NULL,DECODE(X.RTN_CH_NO,NULL,X.MTL_NO),X.PRP_CHARGE_NO1) = Y.MTL_NO
+                 ORDER BY X.PRP_CHARGE_NO1)
+         WHERE ROWNUM = 1) A
+      ,(SELECT Y.MTL_NO CHARGE_NO
+              ,X.PLAN_CHARGE_NO       W_PLAN_CHARGE_NO
+              ,X.SM_STEEL_GRD_N         W_SM_STEEL_GRD_N
+              ,X.SM_2ND_RFN_CD        W_SM_2ND_RFN_CD
+              ,X.MOLTEN_STEEL_CHAR_CD_N W_MOLTEN_STEEL_CHAR_CD_N
+          FROM POSM2D.TB_M2DB01_C_IRPRP010 X
+              ,(SELECT OPER_FLAG, FAC_OP_CD_N ||'D1' FAC_OP_CD_N, MTL_NO FROM TT) Y
+         WHERE Y.OPER_FLAG = X.OPER_FLAG(+)
+           AND Y.FAC_OP_CD_N = X.FAC_OP_CD_N(+)
+           AND Y.MTL_NO = X.MTL_NO(+)) B
+ WHERE B.CHARGE_NO = A.CHARGE_NO(+)
+	 ]]></select>
+	<select id="SteelBofLatestMtlNoVOByType"
+		resultType="com.posco.mes3.m2drq0.domain.dto.bof.SteelBofLatestMtlNoDto"><![CDATA[
+SELECT 'BOF' AS TYPE, MTL_NO
+    FROM (
+        SELECT /*+ index_desc(t1.t1 IX_M2DB02CBOF010_N3) */T1.MTL_NO
+        FROM POSM2D.TB_M2DB02_C_BOF010 T1
+        WHERE 1 = (CASE WHEN #{type} = 'BOF' THEN 1 ELSE 2 END)
+        AND T1.OPER_FLAG  = #{operFlag}
+        AND T1.FAC_OP_CD_N LIKE SUBSTR(#{facOpCdN},1,1)||'%'
+        ORDER BY LAST_UPDATE_TIMESTAMP DESC 
+    ) T1
+WHERE ROWNUM = 1
+UNION 
+SELECT 'BOFDP' AS TYPE, MTL_NO
+    FROM (
+        SELECT /*+ index_desc(t1.t1 IX_M2DB02CBOFDP010_N3) */T1.MTL_NO
+        FROM POSM2D.TB_M2DB02_C_BOFDP010 T1
+        WHERE 1 = (CASE WHEN #{type} = 'BOFDP' THEN 1 ELSE 2 END)
+        AND T1.OPER_FLAG  = #{operFlag}
+        AND T1.FAC_OP_CD_N LIKE SUBSTR(#{facOpCdN},1,1)||'%'
+        ORDER BY LAST_UPDATE_TIMESTAMP DESC 
+    ) T1
+WHERE ROWNUM = 1
+UNION 
+SELECT 'DPF' AS TYPE, MTL_NO
+    FROM (
+        SELECT /*+ index_desc(t1.t1 IX_M2DB02CDPF010_N3) */T1.MTL_NO
+        FROM POSM2D.TB_M2DB02_C_DPF010 T1
+        WHERE 1 = (CASE WHEN #{type} = 'DPF' THEN 1 ELSE 2 END)
+        AND T1.OPER_FLAG  = #{operFlag}
+        AND T1.FAC_OP_CD_N LIKE SUBSTR(#{facOpCdN},1,1)||'%'
+        ORDER BY LAST_UPDATE_TIMESTAMP DESC 
+    ) T1
+WHERE ROWNUM = 1
+UNION 
+SELECT 'BOFBLW' AS TYPE, MTL_NO
+    FROM (
+        SELECT /*+ index_desc(t1.t1 IX_M2DB02CBOFBLW010_N2) */T1.MTL_NO
+        FROM POSM2D.TB_M2DB02_C_BOFBLW010 T1
+        WHERE 1 = (CASE WHEN #{type} = 'BOFBLW' THEN 1 ELSE 2 END)
+        AND T1.OPER_FLAG  = #{operFlag}
+        AND T1.FAC_OP_CD_N LIKE SUBSTR(#{facOpCdN},1,1)||'%'
+        ORDER BY LAST_UPDATE_TIMESTAMP DESC 
+    ) T1
+WHERE ROWNUM = 1
+UNION 
+SELECT 'PLRES' AS TYPE, MTL_NO
+    FROM (
+        SELECT /*+ index_desc(t1.t1 IX_M2DB02CPLRES010_N3) */T1.MTL_NO
+        FROM POSM2D.TB_M2DB02_C_PLRES010 T1
+        WHERE 1 = (CASE WHEN #{type} = 'PLRES' THEN 1 ELSE 2 END)
+        AND T1.OPER_FLAG  = #{operFlag}
+        AND T1.FAC_OP_CD_N LIKE SUBSTR(#{facOpCdN},1,1)||'%'
+        ORDER BY LAST_UPDATE_TIMESTAMP DESC 
+    ) T1
+WHERE ROWNUM = 1
+UNION 
+SELECT 'BOFMD' AS TYPE, MTL_NO
+    FROM (
+        SELECT /*+ index_desc(t1.t1 IX_M2DB02CBOFMD010_N2) */T1.MTL_NO
+        FROM POSM2D.TB_M2DB02_C_BOFMD010 T1
+        WHERE 1 = (CASE WHEN #{type} = 'BOFMD' THEN 1 ELSE 2 END)
+        AND T1.OPER_FLAG  = #{operFlag}
+        AND T1.FAC_OP_CD_N = #{facOpCdN}
+        ORDER BY LAST_UPDATE_TIMESTAMP DESC 
+    ) T1
+WHERE ROWNUM = 1
+UNION 
+SELECT 'DPFMD' AS TYPE, MTL_NO
+    FROM (
+        SELECT /*+ index_desc(t1.t1 IX_M2DB02CDPFMD010_N2) */T1.MTL_NO
+        FROM POSM2D.TB_M2DB02_C_DPFMD010 T1
+        WHERE 1 = (CASE WHEN #{type} = 'DPFMD' THEN 1 ELSE 2 END)
+        AND T1.OPER_FLAG  = #{operFlag}
+        AND T1.FAC_OP_CD_N LIKE SUBSTR(#{facOpCdN},1,1)||'%'
+        ORDER BY LAST_UPDATE_TIMESTAMP DESC 
+    ) T1
+WHERE ROWNUM = 1
+UNION 
+SELECT 'BOFMI' AS TYPE, MTL_NO
+    FROM (
+        SELECT /*+ index_desc(t1.t1 IX_M2DB02CBOFMIN010_N2) */T1.MTL_NO
+        FROM POSM2D.TB_M2DB02_C_BOFMIN010 T1
+        WHERE 1 = (CASE WHEN #{type} = 'BOFMI' THEN 1 ELSE 2 END)
+        AND T1.OPER_FLAG  = #{operFlag}
+        AND T1.FAC_OP_CD_N LIKE SUBSTR(#{facOpCdN},1,1)||'%'
+        ORDER BY TRANSACTION_ID DESC 
+    ) T1
+WHERE ROWNUM = 1
+	 ]]></select>
+	<select id="SteelPlanChargeNoVO"
+		resultType="com.posco.mes3.m2drq0.domain.dto.bof.SteelPlanChargeNoDto"><![CDATA[
+SELECT /*+ M22 UI m22d20e010pop10 예정번호선택 SteelPlanChargeNoVO designedBy 허철호 createdBy 진교윤 */
+       INDI_MTL_NO          --지시재료번호
+      ,PLAN_CHARGE_NO       --예정Charge번호
+      ,LD_EQP_NO AS FCE_NUM            --로NO
+      ,TO_CHAR(CTL_PLN_DIR_CC_MC_NO)||'-'||
+       TO_CHAR(CTL_INDI_CAST_TR_CH_CNT)||'-'||
+       TO_CHAR(CH_SEQ_IN_CAST)
+       CAST_MC_CNT_SEQ      --연연주
+      ,SM_STEEL_GRD_N         --출강목표번호
+      ,MOLTEN_STEEL_CHAR_CD_N --용강특성코드
+      ,SM_2ND_RFN_CD        --제강2차정련코드
+  FROM (SELECT DISTINCT A.INDI_MTL_NO
+              ,A.PLAN_CHARGE_NO
+              ,DECODE(A.CTL_ACT_RCV_LD_EQP_NO,NULL,A.CTL_PLN_DIR_LD_EQP_NO,A.CTL_ACT_RCV_LD_EQP_NO) LD_EQP_NO
+              ,A.CTL_PLN_DIR_CC_MC_NO
+              ,NVL(A.CTL_INDI_DM_BAR_CON_CC_CNT,A.CTL_INDI_CAST_TR_CH_CNT) CTL_INDI_CAST_TR_CH_CNT
+              ,NVL(A.CTL_INDI_DM_BAR_CON_CC_SEQ,A.CH_SEQ_IN_CAST) CH_SEQ_IN_CAST
+              ,B.SM_STEEL_GRD_N
+              ,B.MOLTEN_STEEL_CHAR_CD_N
+              ,B.SM_2ND_RFN_CD
+          FROM VI_N1BH01_TAPSCH_RST_S1 A
+              ,VI_N1BH01_SPEC_CHARGE_S1 B
+         WHERE A.PLAN_CHARGE_NO = B.PLAN_CHARGE_NO
+           AND A.OPER_FLAG = #{operFlag}
+           AND A.FAC_OP_CD_N = #{facOpCdN}
+           AND A.FAC_OP_CD_N = DECODE(A.OPER_FLAG,'C',DECODE(SUBSTR(A.INDI_MTL_NO,1,2),'SB','2L1','SF','3L1','1L1'),A.FAC_OP_CD_N) --2010-05-18 용강크로스재 수정
+           AND A.INDI_MTL_NO2 IS NULL
+         ORDER BY A.INDI_MTL_NO ASC)
+/*
+ * 이행데이터와 테스트데이터가 꼬여서 데이터가 많이 조회되니까 임시로 조건을 넣어 놓음, 100->50 나중에 100으로 수정필요
+ * TO DO,kimjeongjung
+ */
+ WHERE ROWNUM <= 30
+	 ]]></select>
+	<select id="SteelReturnChargeNoVO"
+		resultType="com.posco.mes3.m2drq0.domain.dto.bof.SteelReturnChargeNoDto"><![CDATA[
+SELECT /*+ M22 UI m22d20e010 반송강번조회 SteelReturnChargeNoVO designedBy 김도균 createdBy 김도균 */
+       MTL_NO        -- Charge 번호
+      ,RTN_M_STE_QT  -- 반송용강량
+      ,CAST_DN_TP    -- 주조완료구분
+      ,RTN_DT        -- 반송발생일시
+  FROM POSM2D.TB_M2DC01_C_CHMTL010
+ WHERE OPER_FLAG = #{operFlag}
+   AND FAC_OP_CD_N = #{facOpCdN}
+   AND RTN_M_STE_QT > 0
+   AND RTN_DT >= SYSDATE-2
+ ORDER BY MTL_NO DESC
+	 ]]></select>
+	<select id="SteelLdRstPerMinuteDataVO"
+		resultType="com.posco.mes3.m2drq0.domain.dto.bof.SteelLdRstPerMinuteDataDto"><![CDATA[
+SELECT /*+ M22 UI m22d20e150 전로분단위조업실적조회 SteelLdRstPerMinuteDataVO designedBy 김정중 createdBy 김정중 */
+	   MTL_NO
+	  ,OPER_FLAG
+	  ,FAC_OP_CD_N
+	  ,WORKS_CODE
+	  ,FCE_NUM
+	  ,SM_LD_BLW_ELPS_TM
+	  ,SM_LD_BLW_PRG_RT
+	  ,LD_FCE_OX_ADD_QT_M
+	  ,SM_LD_HS_VV_OP_STAT_TP
+	  ,SM_LD_ML_S_HET
+	  ,SM_LD_C_A_WGT
+	  ,SM_LD_O2_LC_S_HET
+	  ,SM_LD_O2_LC_C_A_HET
+	  ,SM_LD_O2_LC_S_O_SPLY_SPD
+	  ,SM_LD_O2_LC_C_A_O_SPLY_SPD
+	  ,DECODE(SM_LD_LBLW_GS_TP_TP,'1','Ar','2','N2',SM_LD_LBLW_GS_TP_TP) AS SM_LD_LBLW_GS_TP_TP
+	  ,SM_LD_S_LBLW_GS_SPLY_SPD
+	  ,SM_LD_C_A_LBLW_GS_SPLY_SPD
+	  ,SM_LD_C_A_LBLW_GS_FRT_PS
+	  ,SM_LD_C_A_LBLW_GS_RS_PS
+	  ,SM_LD_C_A_O_PZF
+	  ,SM_LD_C_A_O_FRT_PS
+	  ,SM_LD_C_A_O_RS_PS
+	  ,SM_LD_C_A_O_M_N_DEN
+	  ,SM_LD_HDOD_C_PS_A
+	  ,SM_LD_EXG_C_FL_A*10 SM_LD_EXG_C_FL_A
+	  ,SM_LD_EXG_AS_CO_C_DEN_A
+	  ,SM_LD_EXG_AS_CO2_C_DEN_A
+	  ,SM_LD_EXG_CA_O2_DEN
+	  ,SM_LD_C_A_SKT_HET_PNT
+	  ,SM_LD_SLAC_PRBZ_TYPE_TP
+	  ,SM_LD_SLAC_MSE_TMP
+	  ,SM_LD_SLZE_ME_O_DEN
+	  ,SM_LD_SLAC_MSE_CABZ_QT
+	  ,SM_LD_SLAC_ME_S_DTH
+	  ,SM_LD_SLAC_IS_EFC
+	  ,SM_LD_LBLW_NOZ_NO_TP1
+	  ,SM_LD_LBLW_NOZ_S_SPLY_SPD1
+	  ,SM_LD_LBLW_NOZ_C_A_SPLY_SPD1
+	  ,SM_LD_LBLW_NOZ_C_A_PS1
+	  ,SM_LD_LBLW_NOZ_NO_TP2
+	  ,SM_LD_LBLW_NOZ_S_SPLY_SPD2
+	  ,SM_LD_LBLW_NOZ_C_A_SPLY_SPD2
+	  ,SM_LD_LBLW_NOZ_C_A_PS2
+	  ,SM_LD_LBLW_NOZ_NO_TP3
+	  ,SM_LD_LBLW_NOZ_S_SPLY_SPD3
+	  ,SM_LD_LBLW_NOZ_C_A_SPLY_SPD3
+	  ,SM_LD_LBLW_NOZ_C_A_PS3
+	  ,SM_LD_LBLW_NOZ_NO_TP4
+	  ,SM_LD_LBLW_NOZ_S_SPLY_SPD4
+	  ,SM_LD_LBLW_NOZ_C_A_SPLY_SPD4
+	  ,SM_LD_LBLW_NOZ_C_A_PS4
+	  ,SM_LD_LBLW_NOZ_NO_TP5
+	  ,SM_LD_LBLW_NOZ_S_SPLY_SPD5
+	  ,SM_LD_LBLW_NOZ_C_A_SPLY_SPD5
+	  ,SM_LD_LBLW_NOZ_C_A_PS5
+	  ,SM_LD_LBLW_NOZ_NO_TP6
+	  ,SM_LD_LBLW_NOZ_S_SPLY_SPD6
+	  ,SM_LD_LBLW_NOZ_C_A_SPLY_SPD6
+	  ,SM_LD_LBLW_NOZ_C_A_PS6
+	  ,SM_LD_LBLW_NOZ_NO_TP7
+	  ,SM_LD_LBLW_NOZ_S_SPLY_SPD7
+	  ,SM_LD_LBLW_NOZ_C_A_SPLY_SPD7
+	  ,SM_LD_LBLW_NOZ_C_A_PS7
+	  ,SM_LD_LBLW_NOZ_NO_TP8
+	  ,SM_LD_LBLW_NOZ_S_SPLY_SPD8
+	  ,SM_LD_LBLW_NOZ_C_A_SPLY_SPD8
+	  ,SM_LD_LBLW_NOZ_C_A_PS8
+	  ,SM_LD_LBLW_NOZ_NO_TP9
+	  ,SM_LD_LBLW_NOZ_S_SPLY_SPD9
+	  ,SM_LD_LBLW_NOZ_C_A_SPLY_SPD9
+	  ,SM_LD_LBLW_NOZ_C_A_PS9
+	  ,SM_LD_LBLW_NOZ_NO_TP10
+	  ,SM_LD_LBLW_NOZ_S_SPLY_SPD10
+	  ,SM_LD_LBLW_NOZ_C_A_SPLY_SPD10
+	  ,SM_LD_LBLW_NOZ_C_A_PS10
+	  ,SM_LD_LBLW_NOZ_NO_TP11
+	  ,SM_LD_LBLW_NOZ_S_SPLY_SPD11
+	  ,SM_LD_LBLW_NOZ_C_A_SPLY_SPD11
+	  ,SM_LD_LBLW_NOZ_C_A_PS11
+	  ,SM_LD_LBLW_NOZ_NO_TP12
+	  ,SM_LD_LBLW_NOZ_S_SPLY_SPD12
+	  ,SM_LD_LBLW_NOZ_C_A_SPLY_SPD12
+	  ,SM_LD_LBLW_NOZ_C_A_PS12
+	  ,SM_LD_LBLW_NOZ_NO_TP13
+	  ,SM_LD_LBLW_NOZ_S_SPLY_SPD13
+	  ,SM_LD_LBLW_NOZ_C_A_SPLY_SPD13
+	  ,SM_LD_LBLW_NOZ_C_A_PS13
+	  ,SM_LD_LBLW_NOZ_NO_TP14
+	  ,SM_LD_LBLW_NOZ_S_SPLY_SPD14
+	  ,SM_LD_LBLW_NOZ_C_A_SPLY_SPD14
+	  ,SM_LD_LBLW_NOZ_C_A_PS14
+	  ,RMAT_MAN_ITEM_DESC_CD_N11
+      ,(SELECT RMAT_MAN_ITEM_DESC_CD_OPR_NAM
+        FROM VI_M00_R_PUM_STEEL T1
+        WHERE T1.OPER_FLAG = STEL.OPER_FLAG
+         AND T1.FAC_OP_CD_N = STEL.FAC_OP_CD_N
+         AND T1.RMAT_MAN_ITEM_DESC_CD_N = STEL.RMAT_MAN_ITEM_DESC_CD_N11
+         AND ROWNUM = 1
+       ) AS RMAT_MAN_ITEM_DESC_CD_N11_NAME
+	  ,SM_LD_SRMT_THW_SAT_BLW_PRGT1
+	  ,SM_LD_SRMT_THW_DN_BLW_PRGT1
+	  ,SM_LD_SRMT_THW_S_QT1
+	  ,SM_LD_SRMT_THW_A_QT1
+	  ,RMAT_MAN_ITEM_DESC_CD_N12
+      ,(SELECT RMAT_MAN_ITEM_DESC_CD_OPR_NAM
+        FROM VI_M00_R_PUM_STEEL T1
+        WHERE T1.OPER_FLAG = STEL.OPER_FLAG
+         AND T1.FAC_OP_CD_N = STEL.FAC_OP_CD_N
+         AND T1.RMAT_MAN_ITEM_DESC_CD_N = STEL.RMAT_MAN_ITEM_DESC_CD_N12
+         AND ROWNUM = 1
+       ) AS RMAT_MAN_ITEM_DESC_CD_N12_NAME	  
+	  ,SM_LD_SRMT_THW_SAT_BLW_PRGT2
+	  ,SM_LD_SRMT_THW_DN_BLW_PRGT2
+	  ,SM_LD_SRMT_THW_S_QT2
+	  ,SM_LD_SRMT_THW_A_QT2
+	  ,RMAT_MAN_ITEM_DESC_CD_N13
+	  ,(SELECT RMAT_MAN_ITEM_DESC_CD_OPR_NAM
+        FROM VI_M00_R_PUM_STEEL T1
+        WHERE T1.OPER_FLAG = STEL.OPER_FLAG
+         AND T1.FAC_OP_CD_N = STEL.FAC_OP_CD_N
+         AND T1.RMAT_MAN_ITEM_DESC_CD_N = STEL.RMAT_MAN_ITEM_DESC_CD_N13
+         AND ROWNUM = 1
+       ) AS RMAT_MAN_ITEM_DESC_CD_N13_NAME
+	  ,SM_LD_SRMT_THW_SAT_BLW_PRGT3
+	  ,SM_LD_SRMT_THW_DN_BLW_PRGT3
+	  ,SM_LD_SRMT_THW_S_QT3
+	  ,SM_LD_SRMT_THW_A_QT3
+	  ,RMAT_MAN_ITEM_DESC_CD_N14
+      ,(SELECT RMAT_MAN_ITEM_DESC_CD_OPR_NAM
+        FROM VI_M00_R_PUM_STEEL T1
+        WHERE T1.OPER_FLAG = STEL.OPER_FLAG
+         AND T1.FAC_OP_CD_N = STEL.FAC_OP_CD_N
+         AND T1.RMAT_MAN_ITEM_DESC_CD_N = STEL.RMAT_MAN_ITEM_DESC_CD_N14
+         AND ROWNUM = 1
+       ) AS RMAT_MAN_ITEM_DESC_CD_N14_NAME
+	  ,SM_LD_SRMT_THW_SAT_BLW_PRGT4
+	  ,SM_LD_SRMT_THW_DN_BLW_PRGT4
+	  ,SM_LD_SRMT_THW_S_QT4
+	  ,SM_LD_SRMT_THW_A_QT4
+	  ,RMAT_MAN_ITEM_DESC_CD_N15
+      ,(SELECT RMAT_MAN_ITEM_DESC_CD_OPR_NAM
+        FROM VI_M00_R_PUM_STEEL T1
+        WHERE T1.OPER_FLAG = STEL.OPER_FLAG
+         AND T1.FAC_OP_CD_N = STEL.FAC_OP_CD_N
+         AND T1.RMAT_MAN_ITEM_DESC_CD_N = STEL.RMAT_MAN_ITEM_DESC_CD_N15
+         AND ROWNUM = 1
+       ) AS RMAT_MAN_ITEM_DESC_CD_N15_NAME
+	  ,SM_LD_SRMT_THW_SAT_BLW_PRGT5
+	  ,SM_LD_SRMT_THW_DN_BLW_PRGT5
+	  ,SM_LD_SRMT_THW_S_QT5
+	  ,SM_LD_SRMT_THW_A_QT5
+	  ,RMAT_MAN_ITEM_DESC_CD_N16
+      ,(SELECT RMAT_MAN_ITEM_DESC_CD_OPR_NAM
+        FROM VI_M00_R_PUM_STEEL T1
+        WHERE T1.OPER_FLAG = STEL.OPER_FLAG
+         AND T1.FAC_OP_CD_N = STEL.FAC_OP_CD_N
+         AND T1.RMAT_MAN_ITEM_DESC_CD_N = STEL.RMAT_MAN_ITEM_DESC_CD_N16
+         AND ROWNUM = 1
+       ) AS RMAT_MAN_ITEM_DESC_CD_N16_NAME
+	  ,SM_LD_SRMT_THW_SAT_BLW_PRGT6
+	  ,SM_LD_SRMT_THW_DN_BLW_PRGT6
+	  ,SM_LD_SRMT_THW_S_QT6
+	  ,SM_LD_SRMT_THW_A_QT6
+	  ,RMAT_MAN_ITEM_DESC_CD_N17
+	  ,(SELECT RMAT_MAN_ITEM_DESC_CD_OPR_NAM
+        FROM VI_M00_R_PUM_STEEL T1
+        WHERE T1.OPER_FLAG = STEL.OPER_FLAG
+         AND T1.FAC_OP_CD_N = STEL.FAC_OP_CD_N
+         AND T1.RMAT_MAN_ITEM_DESC_CD_N = STEL.RMAT_MAN_ITEM_DESC_CD_N17
+         AND ROWNUM = 1
+       ) AS RMAT_MAN_ITEM_DESC_CD_N17_NAME
+	  ,SM_LD_SRMT_THW_SAT_BLW_PRGT7
+	  ,SM_LD_SRMT_THW_DN_BLW_PRGT7
+	  ,SM_LD_SRMT_THW_S_QT7
+	  ,SM_LD_SRMT_THW_A_QT7
+	  ,RMAT_MAN_ITEM_DESC_CD_N18
+	  ,(SELECT RMAT_MAN_ITEM_DESC_CD_OPR_NAM
+        FROM VI_M00_R_PUM_STEEL T1
+        WHERE T1.OPER_FLAG = STEL.OPER_FLAG
+         AND T1.FAC_OP_CD_N = STEL.FAC_OP_CD_N
+         AND T1.RMAT_MAN_ITEM_DESC_CD_N = STEL.RMAT_MAN_ITEM_DESC_CD_N18
+         AND ROWNUM = 1
+       ) AS RMAT_MAN_ITEM_DESC_CD_N18_NAME
+	  ,SM_LD_SRMT_THW_SAT_BLW_PRGT8
+	  ,SM_LD_SRMT_THW_DN_BLW_PRGT8
+	  ,SM_LD_SRMT_THW_S_QT8
+	  ,SM_LD_SRMT_THW_A_QT8
+	  ,RMAT_MAN_ITEM_DESC_CD_N19
+      ,(SELECT RMAT_MAN_ITEM_DESC_CD_OPR_NAM
+        FROM VI_M00_R_PUM_STEEL T1
+        WHERE T1.OPER_FLAG = STEL.OPER_FLAG
+         AND T1.FAC_OP_CD_N = STEL.FAC_OP_CD_N
+         AND T1.RMAT_MAN_ITEM_DESC_CD_N = STEL.RMAT_MAN_ITEM_DESC_CD_N19
+         AND ROWNUM = 1
+       ) AS RMAT_MAN_ITEM_DESC_CD_N19_NAME
+	  ,SM_LD_SRMT_THW_SAT_BLW_PRGT9
+	  ,SM_LD_SRMT_THW_DN_BLW_PRGT9
+	  ,SM_LD_SRMT_THW_S_QT9
+	  ,SM_LD_SRMT_THW_A_QT9
+	  ,RMAT_MAN_ITEM_DESC_CD_N110
+      ,(SELECT RMAT_MAN_ITEM_DESC_CD_OPR_NAM
+        FROM VI_M00_R_PUM_STEEL T1
+        WHERE T1.OPER_FLAG = STEL.OPER_FLAG
+         AND T1.FAC_OP_CD_N = STEL.FAC_OP_CD_N
+         AND T1.RMAT_MAN_ITEM_DESC_CD_N = STEL.RMAT_MAN_ITEM_DESC_CD_N110
+         AND ROWNUM = 1
+       ) AS RMAT_MAN_ITEM_DESC_CD_N110_NAME
+	  ,SM_LD_SRMT_THW_SAT_BLW_PRGT10
+	  ,SM_LD_SRMT_THW_DN_BLW_PRGT10
+	  ,SM_LD_SRMT_THW_S_QT10
+	  ,SM_LD_SRMT_THW_A_QT10
+	  ,RMAT_MAN_ITEM_DESC_CD_N21
+      ,(SELECT RMAT_MAN_ITEM_DESC_CD_OPR_NAM
+        FROM VI_M00_R_PUM_STEEL T1
+        WHERE T1.OPER_FLAG = STEL.OPER_FLAG
+         AND T1.FAC_OP_CD_N = STEL.FAC_OP_CD_N
+         AND T1.RMAT_MAN_ITEM_DESC_CD_N = STEL.RMAT_MAN_ITEM_DESC_CD_N21
+         AND ROWNUM = 1
+       ) AS RMAT_MAN_ITEM_DESC_CD_N21_NAME
+	  ,SM_LD_AYFE_WGTG_SAT_BLW_PRGT1
+	  ,SM_LD_AYFE_WGTG_DN_BLW_PRGT1
+	  ,SM_LD_AYFE_WGTG_S_QT1
+	  ,SM_LD_AYFE_WGTG_A_QT1
+	  ,SM_LD_AYFE_THW_SAT_TM1
+	  ,SM_LD_AYFE_THW_DN_TM1
+	  ,SM_LD_AYFE_THW_A_QT1
+	  ,RMAT_MAN_ITEM_DESC_CD_N22
+	  ,(SELECT RMAT_MAN_ITEM_DESC_CD_OPR_NAM
+        FROM VI_M00_R_PUM_STEEL T1
+        WHERE T1.OPER_FLAG = STEL.OPER_FLAG
+         AND T1.FAC_OP_CD_N = STEL.FAC_OP_CD_N
+         AND T1.RMAT_MAN_ITEM_DESC_CD_N = STEL.RMAT_MAN_ITEM_DESC_CD_N22
+         AND ROWNUM = 1
+       ) AS RMAT_MAN_ITEM_DESC_CD_N22_NAME
+	  ,SM_LD_AYFE_WGTG_SAT_BLW_PRGT2
+	  ,SM_LD_AYFE_WGTG_DN_BLW_PRGT2
+	  ,SM_LD_AYFE_WGTG_S_QT2
+	  ,SM_LD_AYFE_WGTG_A_QT2
+	  ,SM_LD_AYFE_THW_SAT_TM2
+	  ,SM_LD_AYFE_THW_DN_TM2
+	  ,SM_LD_AYFE_THW_A_QT2
+	  ,RMAT_MAN_ITEM_DESC_CD_N23
+	  ,(SELECT RMAT_MAN_ITEM_DESC_CD_OPR_NAM
+        FROM VI_M00_R_PUM_STEEL T1
+        WHERE T1.OPER_FLAG = STEL.OPER_FLAG
+         AND T1.FAC_OP_CD_N = STEL.FAC_OP_CD_N
+         AND T1.RMAT_MAN_ITEM_DESC_CD_N = STEL.RMAT_MAN_ITEM_DESC_CD_N23
+         AND ROWNUM = 1
+       ) AS RMAT_MAN_ITEM_DESC_CD_N23_NAME	  
+	  ,SM_LD_AYFE_WGTG_SAT_BLW_PRGT3
+	  ,SM_LD_AYFE_WGTG_DN_BLW_PRGT3
+	  ,SM_LD_AYFE_WGTG_S_QT3
+	  ,SM_LD_AYFE_WGTG_A_QT3
+	  ,SM_LD_AYFE_THW_SAT_TM3
+	  ,SM_LD_AYFE_THW_DN_TM3
+	  ,SM_LD_AYFE_THW_A_QT3
+	  ,RMAT_MAN_ITEM_DESC_CD_N24
+	  ,(SELECT RMAT_MAN_ITEM_DESC_CD_OPR_NAM
+        FROM VI_M00_R_PUM_STEEL T1
+        WHERE T1.OPER_FLAG = STEL.OPER_FLAG
+         AND T1.FAC_OP_CD_N = STEL.FAC_OP_CD_N
+         AND T1.RMAT_MAN_ITEM_DESC_CD_N = STEL.RMAT_MAN_ITEM_DESC_CD_N24
+         AND ROWNUM = 1
+       ) AS RMAT_MAN_ITEM_DESC_CD_N24_NAME
+	  ,SM_LD_AYFE_WGTG_SAT_BLW_PRGT4
+	  ,SM_LD_AYFE_WGTG_DN_BLW_PRGT4
+	  ,SM_LD_AYFE_WGTG_S_QT4
+	  ,SM_LD_AYFE_WGTG_A_QT4
+	  ,SM_LD_AYFE_THW_SAT_TM4
+	  ,SM_LD_AYFE_THW_DN_TM4
+	  ,SM_LD_AYFE_THW_A_QT4
+	  ,RMAT_MAN_ITEM_DESC_CD_N25
+	  ,(SELECT RMAT_MAN_ITEM_DESC_CD_OPR_NAM
+        FROM VI_M00_R_PUM_STEEL T1
+        WHERE T1.OPER_FLAG = STEL.OPER_FLAG
+         AND T1.FAC_OP_CD_N = STEL.FAC_OP_CD_N
+         AND T1.RMAT_MAN_ITEM_DESC_CD_N = STEL.RMAT_MAN_ITEM_DESC_CD_N25
+         AND ROWNUM = 1
+       ) AS RMAT_MAN_ITEM_DESC_CD_N25_NAME	  
+	  ,SM_LD_AYFE_WGTG_SAT_BLW_PRGT5
+	  ,SM_LD_AYFE_WGTG_DN_BLW_PRGT5
+	  ,SM_LD_AYFE_WGTG_S_QT5
+	  ,SM_LD_AYFE_WGTG_A_QT5
+	  ,SM_LD_AYFE_THW_SAT_TM5
+	  ,SM_LD_AYFE_THW_DN_TM5
+	  ,SM_LD_AYFE_THW_A_QT5
+	  ,RMAT_MAN_ITEM_DESC_CD_N26
+	  ,(SELECT RMAT_MAN_ITEM_DESC_CD_OPR_NAM
+        FROM VI_M00_R_PUM_STEEL T1
+        WHERE T1.OPER_FLAG = STEL.OPER_FLAG
+         AND T1.FAC_OP_CD_N = STEL.FAC_OP_CD_N
+         AND T1.RMAT_MAN_ITEM_DESC_CD_N = STEL.RMAT_MAN_ITEM_DESC_CD_N26
+         AND ROWNUM = 1
+       ) AS RMAT_MAN_ITEM_DESC_CD_N26_NAME	 	  
+	  ,SM_LD_AYFE_WGTG_SAT_BLW_PRGT6
+	  ,SM_LD_AYFE_WGTG_DN_BLW_PRGT6
+	  ,SM_LD_AYFE_WGTG_S_QT6
+	  ,SM_LD_AYFE_WGTG_A_QT6
+	  ,SM_LD_AYFE_THW_SAT_TM6
+	  ,SM_LD_AYFE_THW_DN_TM6
+	  ,SM_LD_AYFE_THW_A_QT6
+	  ,RMAT_MAN_ITEM_DESC_CD_N27
+	  ,(SELECT RMAT_MAN_ITEM_DESC_CD_OPR_NAM
+        FROM VI_M00_R_PUM_STEEL T1
+        WHERE T1.OPER_FLAG = STEL.OPER_FLAG
+         AND T1.FAC_OP_CD_N = STEL.FAC_OP_CD_N
+         AND T1.RMAT_MAN_ITEM_DESC_CD_N = STEL.RMAT_MAN_ITEM_DESC_CD_N27
+         AND ROWNUM = 1
+       ) AS RMAT_MAN_ITEM_DESC_CD_N27_NAME		  
+	  ,SM_LD_AYFE_WGTG_SAT_BLW_PRGT7
+	  ,SM_LD_AYFE_WGTG_DN_BLW_PRGT7
+	  ,SM_LD_AYFE_WGTG_S_QT7
+	  ,SM_LD_AYFE_WGTG_A_QT7
+	  ,SM_LD_AYFE_THW_SAT_TM7
+	  ,SM_LD_AYFE_THW_DN_TM7
+	  ,SM_LD_AYFE_THW_A_QT7
+	  ,RMAT_MAN_ITEM_DESC_CD_N28
+	  ,(SELECT RMAT_MAN_ITEM_DESC_CD_OPR_NAM
+        FROM VI_M00_R_PUM_STEEL T1
+        WHERE T1.OPER_FLAG = STEL.OPER_FLAG
+         AND T1.FAC_OP_CD_N = STEL.FAC_OP_CD_N
+         AND T1.RMAT_MAN_ITEM_DESC_CD_N = STEL.RMAT_MAN_ITEM_DESC_CD_N28
+         AND ROWNUM = 1
+       ) AS RMAT_MAN_ITEM_DESC_CD_N28_NAME	  
+	  ,SM_LD_AYFE_WGTG_SAT_BLW_PRGT8
+	  ,SM_LD_AYFE_WGTG_DN_BLW_PRGT8
+	  ,SM_LD_AYFE_WGTG_S_QT8
+	  ,SM_LD_AYFE_WGTG_A_QT8
+	  ,SM_LD_AYFE_THW_SAT_TM8
+	  ,SM_LD_AYFE_THW_DN_TM8
+	  ,SM_LD_AYFE_THW_A_QT8
+	  ,RMAT_MAN_ITEM_DESC_CD_N29
+	  ,(SELECT RMAT_MAN_ITEM_DESC_CD_OPR_NAM
+        FROM VI_M00_R_PUM_STEEL T1
+        WHERE T1.OPER_FLAG = STEL.OPER_FLAG
+         AND T1.FAC_OP_CD_N = STEL.FAC_OP_CD_N
+         AND T1.RMAT_MAN_ITEM_DESC_CD_N = STEL.RMAT_MAN_ITEM_DESC_CD_N29
+         AND ROWNUM = 1
+       ) AS RMAT_MAN_ITEM_DESC_CD_N29_NAME	  
+	  ,SM_LD_AYFE_WGTG_SAT_BLW_PRGT9
+	  ,SM_LD_AYFE_WGTG_DN_BLW_PRGT9
+	  ,SM_LD_AYFE_WGTG_S_QT9
+	  ,SM_LD_AYFE_WGTG_A_QT9
+	  ,SM_LD_AYFE_THW_SAT_TM9
+	  ,SM_LD_AYFE_THW_DN_TM9
+	  ,SM_LD_AYFE_THW_A_QT9
+	  ,RMAT_MAN_ITEM_DESC_CD_N210
+	  ,(SELECT RMAT_MAN_ITEM_DESC_CD_OPR_NAM
+        FROM VI_M00_R_PUM_STEEL T1
+        WHERE T1.OPER_FLAG = STEL.OPER_FLAG
+         AND T1.FAC_OP_CD_N = STEL.FAC_OP_CD_N
+         AND T1.RMAT_MAN_ITEM_DESC_CD_N = STEL.RMAT_MAN_ITEM_DESC_CD_N210
+         AND ROWNUM = 1
+       ) AS RMAT_MAN_ITEM_DESC_CD_N210_NAME	 
+	  ,SM_LD_AYFE_WGTG_SAT_BLW_PRGT10
+	  ,SM_LD_AYFE_WGTG_DN_BLW_PRGT10
+	  ,SM_LD_AYFE_WGTG_S_QT10
+	  ,SM_LD_AYFE_WGTG_A_QT10
+	  ,SM_LD_AYFE_THW_SAT_TM10
+	  ,SM_LD_AYFE_THW_DN_TM10
+	  ,SM_LD_AYFE_THW_A_QT10
+  FROM POSM2D.TB_M2DB02_C_BOFMIN010 STEL
+ WHERE MTL_NO = #{mtlNo}
+   AND DATA_END_STATUS IS NULL
+ ORDER BY SM_LD_BLW_ELPS_TM
+	 ]]></select>
+	<select id="SteelEbbBSMessageVO"
+		resultType="com.posco.mes3.m2drq0.domain.dto.bof.SteelEbbBSMessageDto"><![CDATA[
+WITH
+WH AS
+(
+	SELECT #{mtlNo} MTL_NO FROM DUAL
+)
+SELECT /*+ M22 NonUI KEA1A007 광_1제강_전로출강개시완료 SteelEbbBSMessageVO DesignedBy KimJunYoung CreatedBy KimJeongJung */
+	   FCE_NUM
+	  ,MTL_NO
+	  ,SM_STEEL_GRD_N
+	  ,NVL(PROC_TP2,PROC_TP1) PROC_TP
+	  ,NVL(MSE_TIM2,MSE_TIM1) MSE_TIM
+	  ,MESSAGE_NM1 --값이 존재하면 기존에 등록한 정보
+	  ,NULL SM_EBB_SITE_TP
+	  ,'2' SM_EBB_MSG_OUT_MT_TP
+	  ,NULL MESSAGE_NM
+	  ,NVL(SUBSTR(SM_EBB_MSG_CONT1,15),FCE_NUM||'호강번'||SUBSTR(MTL_NO,5,3)||'번'||DECODE(PROC_TP1,'1','경처리','2','중처리','3','중 경','4','경 중','5','중중경','6','경중중')||MSE_TIM1||'회') SM_EBB_MSG_CONT
+	  ,SM_EBB_MSG_COR_TP
+	  ,SM_EBB_MSG_OUT_CTL_TP
+	  ,SM_EBB_MSG_OUT_TM
+	  ,SM_EBB_WL_COR_TP
+	  ,SM_EBB_WL_MV_TM
+  FROM (SELECT TO_CHAR(A.FCE_NUM) FCE_NUM
+			  ,A.MTL_NO
+			  ,A.SM_STEEL_GRD_N
+			  ,TO_CHAR(A.FCE_NUM) FCE_NUM1
+			  ,(CASE WHEN SUBSTR(A.SM_STEEL_GRD_N,2,1) = 'U' OR SUBSTR(A.SM_STEEL_GRD_N,2,2) IN ('02','03') THEN '1' ELSE '2' END) PROC_TP1 --1경처리,2중처리,3중경,4경중,5중중경,6경중중
+			  ,'1' MSE_TIM1
+			  ,SUBSTR(B.SM_EBB_MSG_CONT1,8, 1) FCE_NUM2
+			  ,SUBSTR(B.SM_EBB_MSG_CONT1,9, 1) PROC_TP2
+			  ,SUBSTR(B.SM_EBB_MSG_CONT1,10,1) MSE_TIM2
+			  ,B.MESSAGE_NM1
+			  ,B.SM_EBB_MSG_CONT1
+			  ,B.SM_EBB_MSG_COR_TP1  SM_EBB_MSG_COR_TP
+			  ,B.SM_EBB_MSG_OUT_CTL_TP1 SM_EBB_MSG_OUT_CTL_TP
+			  ,B.SM_EBB_MSG_OUT_TM1 SM_EBB_MSG_OUT_TM
+			  ,B.SM_EBB_WL_COR_TP SM_EBB_WL_COR_TP
+			  ,B.SM_EBB_WL_MV_TM SM_EBB_WL_MV_TM
+			  ,A.LAST_UPDATE_TIMESTAMP
+		  FROM TB_M2DC01_C_CHMTL010 A
+		  	  ,TB_M2DB08_C_DISPMSG010 B
+              ,WH
+		 WHERE A.MTL_NO = WH.MTL_NO
+		   AND A.OPER_FLAG = B.OPER_FLAG(+)
+		   AND A.OPER_FLAG||SUBSTR(A.FAC_OP_CD_N,1,1)||'QA01' = B.MESSAGE_NM1(+)
+	   )
+WHERE ROWNUM = 1  
+	 ]]></select>
+	<select id="SteelSmDpfWorkTimeInfoVO"
+		resultType="com.posco.mes3.m2drq0.domain.dto.bof.SteelSmDpfWorkTimeInfoDto"><![CDATA[
+SELECT
+/*+ M22 NonUI KEB1A005 광_2제강_용선장입완료 SteelSmDpfWorkTimeInfoVO DesignedBy KimJeongJung CreatedBy KimJeongJung */
+     B.MTL_NO INDI_MTL_NO
+    ,A.MTL_NO
+    ,A.PLAN_CHARGE_NO
+    ,MAX(DECODE(C.OPERATION_TRACKING_CD,'F2',OP_SAT_DT)) AC_DT
+    ,MAX(DECODE(C.OPERATION_TRACKING_CD,'F3',OP_DN_DT)) AC_DT2
+FROM TB_M2DC01_C_CHMTL010 A
+    ,TB_M2DB02_C_DPF010 B
+    ,TB_M2DC01_E_OPPRG010 C
+WHERE A.PRP_CHARGE_NO1 = B.MTL_NO
+AND B.MTL_NO = C.MTL_NO
+AND C.OPERATION_TRACKING_CD IN ('F2','F3') --F2:탈린개시,F3:탈린완료
+AND A.MTL_NO = #{mtlNo}
+GROUP BY
+     B.MTL_NO
+    ,A.MTL_NO
+    ,A.PLAN_CHARGE_NO
+	 ]]></select>
+	<select id="SteelPrpChargeNoBackupVO"
+		resultType="com.posco.mes3.m2drq0.domain.dto.bof.SteelPrpChargeNoBackupDto"><![CDATA[
+WITH BD AS
+(
+  SELECT /*+ M22 UI m22d20e010 준비강번선택 SteelPrpChargeNoBackupVO designedBy 허철호 createdBy 진교윤 */
+        #{operFlag} OPER_FLAG, #{facOpCdN} FAC_OP_CD_N, #{mtlNo} MTL_NO FROM DUAL
+)
+SELECT PRP_CHARGE_NO1,MTL_NO,PLAN_CHARGE_NO,SM_STEEL_GRD_N
+FROM (
+SELECT A.PRP_CHARGE_NO1  --준비강번
+      ,B.MTL_NO          --장입강번
+      ,A.PLAN_CHARGE_NO  --예정번호
+      ,A.SM_STEEL_GRD_N    --출강목표번호
+  FROM (SELECT PRP_CHARGE_NO1
+              ,PLAN_CHARGE_NO
+              ,SM_STEEL_GRD_N
+              ,ROWNUM RN
+          FROM (  SELECT MTL_NO PRP_CHARGE_NO1, PLAN_CHARGE_NO, SM_STEEL_GRD_N
+                  FROM (SELECT A.MTL_NO, A.PLAN_CHARGE_NO, A.SM_STEEL_GRD_N
+                          FROM POSM2D.TB_M2DB01_C_IRPRP010 A
+                              ,BD B
+                         WHERE A.OPER_FLAG = B.OPER_FLAG
+                           AND SUBSTR(A.FAC_OP_CD_N,1,1) = SUBSTR(B.FAC_OP_CD_N,1,1)
+                           AND A.MTL_NO <= B.MTL_NO
+                         ORDER BY A.IR_LST_ISS_DN_DT  DESC
+                         )
+                 WHERE ROWNUM <= 10)
+         WHERE ROWNUM <= 10) A
+      ,POSM2D.TB_M2DC01_C_CHMTL010 B
+ WHERE A.PRP_CHARGE_NO1 = B.PRP_CHARGE_NO1(+)
+ UNION 
+  SELECT A.PRP_CHARGE_NO1  --준비강번
+      ,B.MTL_NO          --장입강번
+      ,A.PLAN_CHARGE_NO  --예정번호
+      ,A.SM_STEEL_GRD_N    --출강목표번호
+  FROM (SELECT PRP_CHARGE_NO1
+              ,PLAN_CHARGE_NO
+              ,SM_STEEL_GRD_N
+              ,ROWNUM RN
+          FROM (  SELECT MTL_NO PRP_CHARGE_NO1, PLAN_CHARGE_NO, SM_STEEL_GRD_N
+                  FROM (SELECT A.MTL_NO, A.PLAN_CHARGE_NO, A.SM_STEEL_GRD_N
+                          FROM POSM2D.TB_M2DB01_C_IRPRP010 A
+                              ,BD B
+                         WHERE A.OPER_FLAG = B.OPER_FLAG
+                           AND SUBSTR(A.FAC_OP_CD_N,1,1) = SUBSTR(B.FAC_OP_CD_N,1,1)
+                           AND A.MTL_NO > B.MTL_NO
+                         ORDER BY A.IR_LST_ISS_DN_DT  DESC
+                         )
+                 WHERE ROWNUM <= 10)
+         WHERE ROWNUM <= 10) A
+      ,POSM2D.TB_M2DC01_C_CHMTL010 B
+ WHERE A.PRP_CHARGE_NO1 = B.PRP_CHARGE_NO1(+)
+ )
+ ORDER BY PRP_CHARGE_NO1 
+	 ]]></select>
+	<select id="SteelDPFHistoryResultVO"
+		resultType="com.posco.mes3.m2drq0.domain.dto.bof.SteelDPFHistoryResultDto"><![CDATA[
+SELECT  /*+ M22 UI 탈린로제조이력 송신 SteelDPFHistoryResultVO designedBy 양준석 createdBy 양준석 */
+       DECODE(T1.WORKS_CODE,'P','PEZZZ001','K','KEZZZ001') TRANSACTION_CODE 
+      ,T1.WORKS_CODE 
+      ,T1.OPER_FLAG 
+      ,T1.FAC_OP_CD_N 
+      ,TO_CHAR(SYSDATE, 'YYYYMMDDHH24MISS') AS SNDR_INFORM_EDIT_DATE 
+      ,'m2da01-agent' AS SNDR_INFORM_EDIT_PGM_ID 
+      ,'1' AS PRD_EUC_PRC_DIM 
+      ,'0' AS PRD_AC_REPRC_TIM 
+      ,'0' AS ACTION_COUNT 
+      ,T1.MTL_NO 
+      ,T1.SM_DPF_MTAP_DN_DT AS OP_DN_DT
+      ,T2.ORDER_HEAD_LINE_NO
+      ,T2.STEEL_ACTUAL_ITEM_CD1  AS ORDER_ASSEMBLY
+      ,'EF2A0001' AS COMPONENT
+      ,T2.STEEL_ACTUAL_ITEM_CD1  AS ASSEMBLY
+      /*광양 1제강 : 01_KEA11
+        광양 2제강 : 01_KEB11
+        광양 3제강 : 01_KEC11
+        포항 1제강 : 01_PEA11
+        포항 2제강 : 01_PEB11
+        포항 3제강 : 01_PEC11
+      */
+      ,(
+         CASE WHEN T1.WORKS_CODE = 'P' AND T2.FAC_OP_CD_N = '1L1' THEN '01_PEA11'
+              WHEN T1.WORKS_CODE = 'P' AND T2.FAC_OP_CD_N = '2L1' THEN '01_PEB11'
+              WHEN T1.WORKS_CODE = 'P' AND T2.FAC_OP_CD_N = '3L1' THEN '01_PEC11'
+              WHEN T1.WORKS_CODE = 'K' AND T2.FAC_OP_CD_N = '1L1' THEN '01_KEA11'
+              WHEN T1.WORKS_CODE = 'K' AND T2.FAC_OP_CD_N = '2L1' THEN '01_KEB11'
+              WHEN T1.WORKS_CODE = 'K' AND T2.FAC_OP_CD_N = '3L1' THEN '01_KEC11'
+              END 
+       ) AS ROUTING_NO
+      ,' 01_KEB12_1' AS OPERATION_CODE --광양2제강만 탈린로 작업
+       ,'D' AS ESD_OT_TP
+       ,'02' AS TRANS_TYPE
+       ,'02' AS TRANSACTION_TYPE
+       , T1.WORKS_CODE||'DA'||DECODE(T2.FAC_OP_CD_N,'1L1',DECODE(T1.WORKS_CODE,'P','6','1'),SUBSTR(T2.FAC_OP_CD_N,0,1))||'417101'  AS  SPCMN_NO --사소구부 + "DA" + 공장코드(포항1제강 : 6, 그외 공장공정코드 앞1자리) + "417101"
+       ,(NVL(SM_DPF_PRC_TM1,0)+NVL(SM_DPF_PRC_TM2,0)+NVL(SM_DPF_PRC_TM3,0)+NVL(SM_DPF_PRC_TM4,0))*60 AS USAGE
+       ,'R' AS REAL_PRC_F
+  FROM POSM2D.TB_M2DB02_C_DPF010 T1 ,
+       POSM2D.TB_M2DC01_C_CHMTL010 T2
+ WHERE T1.MTL_NO = T2.MTL_NO
+   AND T1.MTL_NO = #{mtlNo}
+	 ]]></select>
+	<select id="SteelBOFHistoryResultVO"
+		resultType="com.posco.mes3.m2drq0.domain.dto.bof.SteelBOFHistoryResultDto"><![CDATA[
+SELECT  /*+ M22 UI 전로 제조이력송신 SteelBOFHistoryResultVO designedBy 양준석 createdBy 양준석 */
+       DECODE(T1.WORKS_CODE,'P','PEZZZ001','K','KEZZZ001') TRANSACTION_CODE 
+      ,T1.WORKS_CODE 
+      ,T1.OPER_FLAG 
+      ,T1.FAC_OP_CD_N 
+      ,TO_CHAR(SYSDATE, 'YYYYMMDDHH24MISS') AS SNDR_INFORM_EDIT_DATE 
+      ,'m2da01-agent' AS SNDR_INFORM_EDIT_PGM_ID 
+      ,'1' AS PRD_EUC_PRC_DIM 
+      ,'0' AS PRD_AC_REPRC_TIM 
+      ,'0' AS ACTION_COUNT 
+      ,T1.MTL_NO 
+      ,T2.PRP_CHARGE_NO1 AS PARENT_MTL_NO
+      ,T1.TAPP_DN_DATE AS OP_DN_DT
+      ,T2.ORDER_HEAD_LINE_NO
+      ,T2.STEEL_ACTUAL_ITEM_CD3  AS ORDER_ASSEMBLY
+      ,T2.STEEL_ACTUAL_ITEM_CD1  AS COMPONENT
+      ,T2.STEEL_ACTUAL_ITEM_CD3  AS ASSEMBLY
+      ,(
+         CASE WHEN T1.WORKS_CODE = 'P' AND T2.FAC_OP_CD_N = '1L1' THEN '01_PEA13'
+              WHEN T1.WORKS_CODE = 'P' AND T2.FAC_OP_CD_N = '2L1' THEN '01_PEB13'
+              WHEN T1.WORKS_CODE = 'P' AND T2.FAC_OP_CD_N = '3L1' THEN '01_PEC13'
+              WHEN T1.WORKS_CODE = 'K' AND T2.FAC_OP_CD_N = '1L1' THEN '01_KEA13'
+              WHEN T1.WORKS_CODE = 'K' AND T2.FAC_OP_CD_N = '2L1' THEN '01_KEB13'
+              WHEN T1.WORKS_CODE = 'K' AND T2.FAC_OP_CD_N = '3L1' THEN '01_KEC13'
+              END 
+       ) AS ROUTING_NO
+      ,(
+         CASE WHEN T1.WORKS_CODE = 'P' AND T2.FAC_OP_CD_N = '1L1' THEN '01_PEA13_1'
+              WHEN T1.WORKS_CODE = 'P' AND T2.FAC_OP_CD_N = '2L1' THEN '01_PEB13_1'
+              WHEN T1.WORKS_CODE = 'P' AND T2.FAC_OP_CD_N = '3L1' THEN '01_PEC13_1'
+              WHEN T1.WORKS_CODE = 'K' AND T2.FAC_OP_CD_N = '1L1' THEN '01_KEA13_1'
+              WHEN T1.WORKS_CODE = 'K' AND T2.FAC_OP_CD_N = '2L1' THEN '01_KEB13_1'
+              WHEN T1.WORKS_CODE = 'K' AND T2.FAC_OP_CD_N = '3L1' THEN '01_KEC13_1'
+              END 
+       ) AS OPERATION_CODE
+       ,'D' AS ESD_OT_TP
+       ,'02' AS TRANS_TYPE
+       ,'02' AS TRANSACTION_TYPE
+        --사소구부 + "DA" + 공장코드(포항1제강 : 6, 그외 공장공정코드 앞1자리) + "417101"
+       , T1.WORKS_CODE||'DA'||DECODE(T2.FAC_OP_CD_N,'1L1',DECODE(T1.WORKS_CODE,'P','6','1'),SUBSTR(T2.FAC_OP_CD_N,0,1))||'417101'  AS  SPCMN_NO
+       ,(((NVL(T1.LD_FCE_OX_BW_TM1,0)+NVL(T1.LD_FCE_OX_BW_TM2,0)+NVL(T1.LD_FCE_OX_BW_TM3,0)+NVL(T1.LD_FCE_OX_BW_TM4,0))*60)
+          +((NVL(T3.LD_FCE_OX_BW_TM1,0)+NVL(T3.LD_FCE_OX_BW_TM2,0))*60)) AS USAGE
+       ,'R' AS REAL_PRC_F
+  FROM POSM2D.TB_M2DB02_C_BOF010 T1 ,
+       POSM2D.TB_M2DC01_C_CHMTL010 T2,
+       POSM2D.TB_M2DB02_C_BOFDP010 T3
+ WHERE T1.MTL_NO = T2.MTL_NO
+   AND T1.MTL_NO = T3.MTL_NO(+)
+   AND T1.MTL_NO = #{mtlNo}
+	 ]]></select>
+	<select id="SteelDpfLdFceRmatUseVO"
+		resultType="com.posco.mes3.m2drq0.domain.dto.bof.SteelDpfLdFceRmatUseDto"><![CDATA[
+SELECT /*+ M22 UI m22d20e040 전로원료사용량관리 SteelLdFceRmatUseVO designedBy 허철호 createdBy 진교윤 */
+       SM_RMAT_THW_TM_TP_CD       --투입구간
+      ,RMAT_MAN_ITEM_DESC_CD_N      --품명코드
+      ,RMAT_MAN_ITEM_DESC_CD_OPR_NAM  --원료대표품명코드명
+      ,SM_RMAT_THW_QT             --투입량
+      ,SM_RMAT_THW_SAT_DT         --제강원료투입개시일시
+      ,SM_RMAT_THW_DN_DT          --제강원료투입완료일시
+      ,TO_CHAR(SM_RMAT_THW_SAT_DT,'HH24:MI') MIN_SM_RMAT_THW_SAT_DT  --제강원료투입개시일시(시분)
+      ,TO_CHAR(SM_RMAT_THW_DN_DT,'HH24:MI') MIN_SM_RMAT_THW_DN_DT    --제강원료투입완료일시(시분)
+      ,TO_CHAR(SM_RMAT_THW_SAT_DT,'YYYY-MM-DD HH24:MI:SS') FULL_SM_RMAT_THW_SAT_DT  --제강원료투입개시일시(Full)
+      ,TO_CHAR(SM_RMAT_THW_DN_DT,'YYYY-MM-DD HH24:MI:SS') FULL_SM_RMAT_THW_DN_DT    --제강원료투입완료일시(Full)
+      ,MRMAT_SUB_RMAT_TP          --주부원료구분
+      ,ASSEMBLY_ITEM_NUMBER       --생산Item코드
+      ,CC_CODE                    --CostCenter
+      ,SUB_INVENTORY_CODE         --SubInventoryCode
+  FROM (SELECT A.SM_RMAT_THW_TM_TP_CD
+              ,A.RMAT_MAN_ITEM_DESC_CD_N
+              ,B.RMAT_MAN_ITEM_DESC_CD_OPR_NAM
+              ,A.SM_RMAT_THW_QT
+              ,A.SM_RMAT_THW_SAT_DT
+              ,A.SM_RMAT_THW_DN_DT
+              ,A.MRMAT_SUB_RMAT_TP
+              ,B.ASSEMBLY_ITEM_NUMBER
+              ,B.CC_CODE
+              ,B.SUB_INVENTORY_CODE
+              ,RANK() OVER (PARTITION BY B.RMAT_MAN_ITEM_DESC_CD_N ORDER BY B.START_ACTIVE_DATE DESC) RN
+          FROM POSM2D.TB_M2DC01_C_RMAT010 A
+               ,(select Distinct a.ORGANIZATION_ID,
+                   a.OPER_FLAG,
+                   a.FAC_OP_CD_N,
+                   a.RMAT_MAN_ITEM_DESC_CD_N ,
+                   a.START_ACTIVE_DATE,
+                   e.OPERATION_CODE1 as CC_CODE,
+                   a.RMAT_USE_YIELD,
+                   a.RMAT_MAN_ITEM_DESC_CD_OPR_NAM,
+                   b.ASSEMBLY_ITEM_NUMBER,
+                   b.SUB_INVENTORY_CODE,
+                   c.MRMAT_SUB_RMAT_TP,
+                   b.RMAT_USE_TP,
+                   a.SM_RMAT_ITEM_CLASS_TP,
+                   a.WORKS_CODE,
+                   a.SM_RMAT_ITEM_DESC_CD,
+                   a.SM_MAT_USE_SPEC,
+                   0 as RMAT_MGT_REDUCT_RT1,
+                   0 as RMAT_MGT_REDUCT_RT2,
+                   a.RMAT_MAN_ITEM_VALUE_OCCUR_TP,
+                   b.ASSEMBLY_ITEM_NUMBER_1 as ASSEMBLY_ITEM_NUMBER_N,
+                   b.COMPONENT_SUBINVENTORY_N
+                 from posmast.VI_M00_R_PUM_STEEL a,
+                   posmast.VI_M00_R_VENDOR_ITEMS b,
+                   posmast.VI_M00_R_PUM_VENDOR_R c,  
+                   posmast.vi_m00_m00a0001 e  
+                 where a.ORGANIZATION_ID = b.ORGANIZATION_ID
+                   and a.RMAT_MAN_ITEM_DESC_CD_N = b.VENDOR_ITEM
+                   and a.ORGANIZATION_ID = c.ORGANIZATION_ID
+                   and a.RMAT_MAN_ITEM_DESC_CD_N = c.VENDOR_ITEM
+                   and a.OPER_FLAG = e.OPER_FLAG
+                   and a.FAC_OP_CD_N = e.FAC_OP_CD_N
+                   and e.OPERATION_CODE1 = c.CC_CODE) B
+                WHERE DECODE(A.WORKS_CODE,'P',6,9) = B.ORGANIZATION_ID
+                AND A.OPER_FLAG = B.OPER_FLAG
+                AND A.FAC_OP_CD_N = B.FAC_OP_CD_N
+                AND A.RMAT_MAN_ITEM_DESC_CD_N = B.RMAT_MAN_ITEM_DESC_CD_N
+                AND A.OPER_FLAG =  #{operFlag}
+                AND A.FAC_OP_CD_N =  #{facOpCdN}
+                AND A.MTL_NO =  #{mtlNo}
+                AND A.AC_OCR_PAS_NUM = '1'
+                AND A.MRMAT_SUB_RMAT_TP =  #{mRmatSubRmatTp}
+                AND A.DATA_END_STATUS IS NULL
+                AND B.START_ACTIVE_DATE <= SYSDATE) B
+ WHERE RN = 1
+ ORDER BY SM_RMAT_THW_TM_TP_CD, RMAT_MAN_ITEM_DESC_CD_N
+	 ]]></select>
+<select id="SteelDpfLdFceRmatUseTotVO"
+		resultType="com.posco.mes3.m2drq0.domain.dto.bof.SteelDpfLdFceRmatUseTotDto"><![CDATA[
+SELECT /*+ M22 UI m22d20e040 탈린로원료사용량관리 SteelDpfLdFceRmatUseTotVO designedBy 허철호 createdBy 박민영 */
+       RMAT_MAN_ITEM_DESC_CD_N               -- 원료대표품명코드
+      ,RMAT_MAN_ITEM_DESC_CD_NAM           -- 원료대표품명코드명
+      ,SUM(SM_RMAT_THW_QT) SM_RMAT_THW_QT  -- 제강원료투입량
+  FROM POSM2D.TB_M2DC01_C_RMAT010 
+ WHERE OPER_FLAG = #{operFlag}
+   AND FAC_OP_CD_N =#{facOpCdN}
+   AND MTL_NO = #{mtlNo}
+   AND AC_OCR_PAS_NUM = '1'
+   AND MRMAT_SUB_RMAT_TP = #{mRmatSubRmatTp}
+   AND DATA_END_STATUS IS NULL
+ GROUP BY RMAT_MAN_ITEM_DESC_CD_N, RMAT_MAN_ITEM_DESC_CD_NAM
+ ORDER BY RMAT_MAN_ITEM_DESC_CD_N, RMAT_MAN_ITEM_DESC_CD_NAM
+	 ]]></select>
+<select id="SteelLdStartTimeInfoVO"
+		resultType="com.posco.mes3.m2drq0.domain.dto.bof.SteelLdStartTimeInfoDto"><![CDATA[
+SELECT /*+ M22 UI 전로실적start시각정보 SteelLdStartTimeInfoVO designedBy 허철호 createdBy 양준석 */
+       CASE WHEN SM_LD_TG_JOB_TM >  999.9 THEN  999.9
+             WHEN SM_LD_TG_JOB_TM < -999.9 THEN -999.9
+             ELSE SM_LD_TG_JOB_TM
+        END AS SM_LD_TG_JOB_TM --제강전로목표작업시간
+     , SM_SREF_CAST_DFF_TG_STAG_TM --제강2차정련주조작업차이목표정체시간
+     , SM_LD_FBLW_STM_BAP_ARR_SC_TM --제강전로최종취련개시시점BAP도착예정시각
+     , SM_LD_FBLW_STM_BAP_DEP_SC_TM --제강전로최종취련개시시점BAP출발예정시각
+     , SM_LD_FBLW_STM_LF_ARR_SC_TM --제강전로최종취련개시시점LF도착예정시각
+     , SM_LD_FBLW_STM_LF_DEP_SC_TM --제강전로최종취련개시시점LF출발예정시각
+     , SM_LD_FBLW_STM_RH_ARR_SC_TM --제강전로최종취련개시시점RH도착예정시각
+     , SM_LD_FBLW_STM_RH_DEP_SC_TM --제강전로최종취련개시시점RH출발예정시각
+     , SM_LD_FBLW_STM_CC_ISAT_SC_TM --제강전로최종취련개시시점연주주입개시예정시각
+     , SM_LD_FBLW_STM_LD_TSAT_SC_TM --제강전로최종취련개시시점전로출강개시예정시각
+     , SM_LD_FBLW_STM_LD_TDN_SC_TM --제강전로최종취련개시시점전로출강완료예정시각
+     , CASE WHEN SM_LD_FBLW_SAT_TM_PRE_JOB_TM >  99.9 THEN  99.9
+             WHEN SM_LD_FBLW_SAT_TM_PRE_JOB_TM < -99.9 THEN -99.9
+             ELSE SM_LD_FBLW_SAT_TM_PRE_JOB_TM
+        END AS SM_LD_FBLW_SAT_TM_PRE_JOB_TM --제강전로최종취련개시시점선작업시간
+     , SM_LD_FBLW_STM_CC_IDN_SC_TM --제강전로최종취련개시시점연주주입완료예정시각
+  FROM (
+         SELECT ROUND((TAPP_DN_DATE - LD_FCE_OX_BW_SAT_DT)*1440,1) AS SM_LD_TG_JOB_TM
+              , SM_SREF_CAST_SAT_STAG_TM AS SM_SREF_CAST_DFF_TG_STAG_TM
+              , BAP_SAT_DT AS SM_LD_FBLW_STM_BAP_ARR_SC_TM
+              , BAP_DN_DT AS SM_LD_FBLW_STM_BAP_DEP_SC_TM
+              , LF_SAT_DT AS SM_LD_FBLW_STM_LF_ARR_SC_TM
+              , LF_DN_DT AS SM_LD_FBLW_STM_LF_DEP_SC_TM
+              , RH_VACCUM_SAT_DT AS SM_LD_FBLW_STM_RH_ARR_SC_TM
+              , RH_VACCUM_DN_DT AS SM_LD_FBLW_STM_RH_DEP_SC_TM
+              , LAD_INJ_SAT_DT AS SM_LD_FBLW_STM_CC_ISAT_SC_TM
+              , TAPP_STA_DATE AS SM_LD_FBLW_STM_LD_TSAT_SC_TM
+              , TAPP_DN_DATE AS SM_LD_FBLW_STM_LD_TDN_SC_TM
+              , NVL(CAST_TM1,CAST_TM) AS SM_LD_FBLW_SAT_TM_PRE_JOB_TM
+              , LAD_INJ_SAT_DT + CAST_TM/1440 AS SM_LD_FBLW_STM_CC_IDN_SC_TM
+           FROM POSM2D.TB_M2DB09_C_STM010
+          WHERE MTL_NO =#{mtlNo}
+        )
+	 ]]></select>	
+</mapper>
