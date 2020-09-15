@@ -1,0 +1,64 @@
+.m2dd010100 {
+  @at-root .mes-default & table.ui.table.chart-table {
+    thead th {
+      //border-color: #444;
+    }
+    tbody td {
+      //border-color: #444;
+      border-top-color: #e8e8e8 !important;
+    }
+    tbody tr:first-child td {
+      border-top-color: #444 !important;
+      background-color: #f0f0f0;
+    }
+    tbody td.onchart {
+      padding: 2px 0;
+      text-align: right;
+      & > div > p {
+        padding-right: 5px;
+      }
+    }
+  }
+
+  &__chart2 {
+    position: relative;
+    @at-root .mes-default & .recharts-wrapper {
+      padding-top: 0;
+    }
+    .recharts-legend-wrapper {
+      display: none;
+    }
+
+    &-sum {
+      padding: 0 10px 0 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: absolute;
+      width: 117px;
+      height: 117px;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      &--item {
+        dl {
+          padding-left: 0;
+          dt,
+          dd {
+            text-align: center;
+            padding: 0;
+            margin: 0;
+          }
+          dt {
+            padding-bottom: 5px;
+            font-size: 18px;
+          }
+          dd {
+            font-size: 28px;
+            font-weight: bold;
+          }
+        }
+      }
+    }
+  }
+}
