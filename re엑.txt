@@ -1,0 +1,398 @@
+3제강 "SlagPot 교체요구 등록" 화면 등록하는 부서에서 slag pot 등록 진행이 안된다고 연락이 옴.
+연락처(3제강:054-220-9040,포호사:054-220-8981,054-220-4649,010-9178-7227(테블릿등록하시는분))
+--> 3제강 L/D반, PORT:286, 일자:2020-08-08
+==> m22d60s100 GetSlagPotChangeInfoVO SlagPot 교체요구조회 <-- 이전 단계에서 처리가 안된듯 하여
+TB_M22_STEL723 테이블 정보를 보니 TRS_OP_END_DT(운송작업종료일시):9999-12-31  11:59:59 PM 로 등록이 되어잇음.(전단계에서 작업이 안된듯.(포호사에서 테블릿으로 등록하는 화면이 있다고 함.))
+포호사에서 권한이 없어서 등록을 못한다고 했다는데 DML작업 완료하고 다시 확인해보니 들어가진다고 함.그리고 지난 POT번호 정보는 알기가 어려움.
+===>DML 작업은 TB_M22_STEL723, STS_SM_VEHC_JIND_PRG_STAT_TP--STS제강차량작업지시진행상태구분(C -> E),VEHC_ARR_DT,TRS_OP_END_DT(DATE는 비슷하게 넣어줌.)
+
+
+지금 slag pot 보호사에서 pot를 가져오는데..
+-->포호사 054-220-8981 , 054-220-4649 작업완료 입력.. 어제 주간조에서 했는데 처리 못한다.
+가져다 놓은 pot번호 정보를 
+
+
+
+
+슬레그팟
+   STS제강 시스템 운영관리>>SlagPot 작업 지시 관리>SlagPot 교체요구 등록
+문용만 054-220-9040
+m22d60s100
+GetSlagPotChangeInfoResult
+  GetSlagPotChangeInfoResult	VO	GetSlagPotChangeInfoVO
+GetSlagPotChangeInfoAramResult	VO	GetSlagPotChangeInfoAramVO
+ 
+   TRS_OP_END_DT ,VEHC_ARR_DT
+   
+happyabk9171@gmail.com // !aksnf1369
+https://gitlab.com/kkjin/boot-21th
+-설치
+-ecmascript 6 ?? 
+-> 표준? ES5 -> ES6 으로 변경되면서 변화.
+-> 
+let으로 선언하면 undefined를 (var처럼 나오지 않고) error로??
+const 사용자 정의 상수 선언(초기화 안되도록 선언)
+'가나다 ' + fir   --> `가나다 ${fir} 
+default parameter를 줄수있다..
+...obj -> 전개연산자
+arrow function : parameter(왼쪽) => 실행문(오른쪽)
+this 바인딩 : 
+ES6는 class개념이 생김.
+constructor 생성자
+트렌스컴파일은 바벨이라는 놈이 ES6->ES5로 컴파일을 해준다.(멀티브라우저)
+modules : 보호(2개의 js를 가져왔을때 중복 보호 안됨 이런거?) 
+commonjs.js , amd.js ---> ES5에서는 이런걸 사용해서 모듈화를 했지만 ES6는 기능을 재공한다.(export,import)
+real DOM <--> 버철DOM(변경해주는건 react가 해주고) 버철DOM이 엘리먼츠?
+React.createElement 엘리먼츠 생성. 이러면 많이 사용되서 JSX를 사용하면 간단하게 사용가능?
+JAX -> 바벨(트렌스컴파일러) -> JAVASCRIPT
+click -> html(root)
+ --> index.js : ReactDOM.render(<App />, document.getElementById('root')); //root component
+props,state
+extends React.Component -> 리엑트 컴포넌트가 된다.
+부모로 받은 데이터는 자식이 변경 불가해서(const 로 자식이 받은거다.let으로 받아봐야 의미가 없음..)
+자식이 바꿀수있는건 state
+propTypes로 데이터 검증도 가능(자식으로 받을때 검증.(warning으로 보여지지만 typeScript를 mas에서 사용해서??)
+state : setState() 메소드로 변경.(props로 받은걸 state로 받아서 변경가능)
+  this.state = { , , } 생성자에서 가능 나머지는 setState()를 사용해야한다..??
+내일부터는 setState()를 따로 관리할꺼라 오늘만 사용..
+export         -> import { print } from ----> 여러개 받을수잇따.
+export default -> import P ----> 하나만 받지만 as 를 자동으로 해준다.
+
+<List.Item key={dept}>
+	<List.Header>{dept}</List.Header>
+</List.Item>
+return (
+	<EmployeeListItem 
+	key={emp.empNumber}
+	emp = {emp} />
+) ---> key가 필요하다.
+
+**참고) 
+첫글자는 대문자 react, 모두 소문자는 html 테그로 인식
+...new Set() 중복제거
+
+** git lab)
+boot21-pd0a8693
+hkyoon1
+day01-pd0a8693
+
+# Push an existing folder)
+cd existing_folder
+git init
+git remote add origin https://gitlab.com/boot21-pd0a8693/day01-pd0a8693.git
+git add .
+git commit -m "Initial commit"
+git push -u origin master
+
+--push시 패스워드가 틀렸을 경우 초기화 명령어.
+git config --system --unset credential.helper
+
+** 실행 명령어)
+npm i -g create-react-app
+npm i -g yarn
+-->추가설정을 해야하는데 yarn을 사용하여 설정을 바꾸기 위해서 설치.
+create-react-app hello-app
+--> node_modules에 모든 packge가 들어가 있음.
+cd hello-app
+npm start
+yarn add semantic-ui-react (js 다운로드)
+yarn add semantic-ui-css (css 다운로드)
+npm i semantic-ui-react semantic-ui-css
+
+
+실습
+create-react-app emp-exam
+
+**코딩)  (built-in Error은 100% component에 대소문자 틀린거다.)
+employee Employees Employee
+components
+C:\react_work\emp-exam\public <-- C:\BOOT_21TH\boot-21th-master\employee_templete images폴더를 copy해서 넣음.
+C:\react_work\emp-exam\src <-- data.js 넣음.
+semantic-ui-react
+import 'semantic-ui-css/semantic.min.css';  <--- https://react.semantic-ui.com/usage url npm default thema
+EmployeeListItem.js
+EmployeeList.js
+<Item.Group divided link> link 걸기
+DepartmentList.js
+
+**과제)
+create-react-app book-exam
+
+BookListItem.js
+
+===========================================================================
+2일차
+===========================================================================
+state (MobX를 사용하여 state를 관리한다.)
+-컴포넌트는 state를 가질수있다..
+함수를 props로 같이 보낸다.
+constructor(props){
+    super(props);
+  }
+--> App.js에  state 생성자 기본(필요)  
+bind : 객체안에 객체는 this가 windows 전역객체로 간다. windows에는 setState()가 없다..
+  --> this를 같이 넘겨준다.
+arrowFunction 은 .bind(this)가 된다. this bind가 된다.
+  --> 방식이 2개다(arrowFunction 또는 .bind(this) 같은 코드??)
+autoBind 라이브러리를 사용하면 자동으로 bind관리..(import autoBind from 'auto-bind';) autoBind(this);
+  --> 근대 모든거에 bind를 거는 문제가 발생하여 mesAutoBind를 사용중이다.. (@mesAutoBind 를 사용)
+
+컴포넌트 디드 마운트 : 컴포넌트가 마운트 되면  서버가서 가져와서 state에 저장?
+컴포넌트 디드 업데이트 : 
+(2개를 주로 사용.) 언제 사용되는지 정도 보면 될듯.
+
+MobX(중요)
+react는 단방향이다.
+Flux, Store에 모은다.(컴포넌트들의 state를 모은다.)
+  연결,엑션,
+스토어,엑션 를 사용하고 , 디스패처는(MobX안에 숨겨있음.)
+
+react
+react-dom
+semantic
+mobx(store관리용)
+mobx-react(mobx와 react를 연결해주는용 라이브러리)  
+
+
+데코레이터 설정?(깨고 잡아야한다?)
+
+
+container -> react component(store와 연결되면 인젝트가 잇으면)
+view -> react component(store와 연결안되면 단순뷰(state필요없는것))
+store ->mobx class
+repository -> axios(서버통신) class
+model
+
+네이밍룰 그냥 클래스는 소문자 시작(단, class EmpRepository { 안에 클래스틑 대문자로 시작)
+react는 대문자 시작
+
+@inject('empStore') --> empStore를 선택(inject하면 props에 들어있다)
+@observer --> 볼꺼다
+
+index.js에서 마지막 셋팅?
+	<Provider 
+		empStore={empStore}
+		deptStroe={deptStore}
+	> --> 이런식으로 여러개 store를 지정하거나,
+	<Provider store={empStore} > 이런식으로 모아놓은 파일하나를 지정.
+componentDidMount() container에 선언해야한다.(컴포넌트가 마운트가 되면 무조건 호출)
+@inject('aa','bb',...)
+	
+** 참고)
+TypeError: Cannot read property 'setState' of undefined --> error 발생 ==> setState가 없다? onSelectDept={this.onSelectDept.bind(this)} 를 넣어야한다.
+
+SearchBar.js
+//console.log('call  onSelectDept : '+deptName);
+//DepartmentList에게 onSelectedDept 함수를 props로 넘겨준다
+//onSelectDept() -> 이렇게 하면 결과값을 주는거고
+//onSelectDept -> 이렇게 함수를 줘야 한다.
+search바에서 state를 연결되는 순간 onChange가 발생해도 넘어가지 않아서 조회가 바로 적용이 안된다.
+ 값을 넘겨줘야 조회가 됨. state가 연결...되면..
+
+** 실습)
+- create-react-app emp-mobx
+- yarn eject  --> 다시 푼다.
+- yarn add @babel/plugin-proposal-class-properties @babel/plugin-proposal-decorators
+- package.json에서 아래 부분 저장.(데코레이터 설정부분?)
+,
+    "plugins": [
+        ["@babel/plugin-proposal-decorators", { "legacy": true}],
+        ["@babel/plugin-proposal-class-properties", { "loose": true}]
+    ]
+- yarn
+- yarn add mobx mobx-react semantic-ui-react semantic-ui-css
+
+**참고)
+@observable name; ts.. typeScript 선언에서 에러임.. 상관없음.
+메뉴 File > preperenes > settings > exper 검색 > 디스패치 관련 체크 하면 name아래 빨간줄 없어짐.
+ 
+** 과제) 
+북리스트아이템에서 onClick이 발생  
+mobx 는 내일 하고 오늘은 state를 사용해서 book과제 하기..
+create-react-app emp-exam2 --> book-exam2인데 잘못 만들었음...;;그냥함..
+npm i semantic-ui-react semantic-ui-css
+components 폴더
+onSearchBooks()
+===========================================================================
+3일차
+===========================================================================
+#mobx
+container -> react component(store와 연결되면 인젝트가 잇으면)
+view -> react component(store와 연결안되면 단순뷰(state필요없는것))
+store ->mobx javascript class
+repository -> axios(서버와통신) class (보통은 여기서 model 데이터를 변환해서 넘겨주는데 store에서도 변환해서 넘겨주기도한다.. )
+model
+
+@observable --> store에서 state로 사용하겠다라고 할때.. @observable emps = [];
+@observer   --> 모든 container,view에 붙인다..(가이드) @observer class EmployeeListContainer extends Component{
+@action		--> 데이터를 변환할 메소드에 붙인다..(store에 메소드 생성) @action findAllEmployees(dept){
+@inject		--> 어떤 store를 사용하겠다..(view는 container에 포한이 되기에 view에는 안붙여도 된다)  @inject('empStore')
+                (inject 하면 자동완성이 안되서 ... 오타가 많다..그래서 type script가 적용이 되면 자동완성 가능..)
+@computed	--> 이거는 무조건 get메소드에서 사용한다. @computed get emps(){
+				computed 는 성능때문에 만들었다..(slice를 계속하게 되니깐.. 기존꺼와 변경이 없으면 그전꺼 준다..?)
+map 배열값
+index.js에서 Provider 설정.
+유사배열객체? - 객체인데 배열처럼 사용하지만 배열이니 물어보면? 아니다..
+  -> @observable emps = []; 이경우 emps를 배열이 아닌 유사배열객체로 본다(obj) (* 5.0에서는 문제 안되는데 4.0에서는 문제가 됨.)
+  -> observable 붙으면 observable 객체로 인식. emps.map() 배열처럼 사용가능하지만 배열은 아니다..
+  -> 개선? : console.dir(empStore.emps); 이걸로 찍어본다..
+             mobx에서 toJS(emps);이걸 많이 사용하면 성능문제(아래까지다 배열로 변환해서.. 사용x)
+			 _emps 외부에서 접근하지 말자(약속 _ )프라이빗
+			 ==> get getEmps(){ get메소드를 사용하면 사용하는곳에서 empStore.getEmps 이렇게 하면 원래는 메소드를 받는데 get을 사용하면 값이 들어간다.
+			==> 조치방법 아래 코드처럼 get 메소드를 만들어서 사용...
+			@observable _emps ;
+			@computed
+			get emps(){
+				return this._emps ? this._emps.slice() : [] ;
+			}
+			호출: empStore.emps;
+			
+#todo
+create-react-app todo-exam
+cd todo-exam
+https://gitlab.com/kkjin/boot-21th/blob/master/set_mobx.md > set_mobx.md 선택
+yarn eject  --> 다시 푼다.
+yarn add @babel/plugin-proposal-class-properties @babel/plugin-proposal-decorators
+,
+    "plugins": [
+        ["@babel/plugin-proposal-decorators", { "legacy": true}],
+        ["@babel/plugin-proposal-class-properties", { "loose": true}]
+    ]
+yarn add mobx mobx-react semantic-ui-react semantic-ui-css moment react-datepicker
+
+todo{ 
+id :
+title :
+date :
+}
+
+1.store먼저 만들고.
+todoStore.js 생성.
+todo객체하나(input이랑연결할용) 관리,todos=[] 배열하나
+ @computed
+    get todo(){
+		//안해도 되지만 굳이 객체로 만든다면 아래와 같이 
+		//아래 같은 코드임.
+        return this._todo;
+        //return this._todo ? {...this._todo} : {};
+    }
+export default new TodoStore(); 일반 javascript class라서 new 사용..
+
+2. TodoListContainer 만들고 app작성
+
+...this._todo, <---기존에 todo를 넣고 아래 값을 새로 넣어라...(title,date 둘다 값을 유지하기 위하여)
+[name] : value,
+
+selected={todo && todo.date ? new Date(todo.date) : null}
+                            dateFormat="yyyy-MM-dd HH:mm" <-- new Data 사용시 format 맞춰줘야함.
+
+**과제)
+todo 이용..
+TodoEditFormView TodoListView
+title date        --> 1row
+add    달력           2row
+				  <-- 3row
+clear(title,date지워짐)
+delete(좌우다 지워짐)
+modify(오른쪽 수정)				  
+
+
+view에 onAddTodo는 컨포넌트에서 받는다.
+
+			
+**참고)
+월요일에 코드 올려줌.
+
+
+removeTodo(todoId){
+let rmIdx = this._todos.findIndex(todo=>todo.id === todoId);
+if(rmIdx > -1){
+this._todos.splice(rmIdx,1);
+}
+}
+
+**참고 )
+gui(event)
+1) 이벤트 대상
+2) 이벤트 리스너(종류가 모냐?)
+3) 이벤트 핸들러(이벤트 처리 코드)
+
+
+
+
+===========================================================================
+4일차
+===========================================================================
+setupProxy.js 들어가면 api호출 경로 설정 8080,9090
+Routes.js 경로설정 (match.path
+toJS 배열안에 배열이 있으면 사용?(성능 문제는?)
+
+store user -> container user -> view
+
+includes -> checked = {user.roles && user.roles.includes('Bidder')} ---> String 포함 여부
+axios.post('/user',user) 한후에 .then 실행
+(15페이지에 axios api 호출방법 참고)
+
+
+ @action
+    clearUser(){
+        this._user = null;
+    }
+
+ path={`${match.path}/user`}  --->  ` 이게 물결위에 꺼임. ' 싱글따옴표가 아님.
+
+configure({
+  enforceActions: 'observed',
+}); ---> 엑션에서만 변경을 하게 셋팅이 되어잇는데 view에서 user를 수정하다 보니 에러? 추가 설정필요
+
+this.props.history.push(`/front/item?sellerId=${userId}`); --> 를 사용해서 이동
+
+
+===========================================================================
+5일차
+===========================================================================
+https://gitlab.com/hkyoon1/boot-21th-final-project
+java -jar auction-boot-8080.jar
+setupProxy.js 파일안에
+module.exports = function(app) {
+  app.use(proxy('/user', { target: 'http://192.168.0.2:8080/', changeOrigin: true }));
+  app.use(proxy('/item', { target: 'http://192.168.0.2:8080/', changeOrigin: true }));
+  app.use(proxy('/bid', { target: 'http://192.168.0.2:8080/', changeOrigin: true }));
+};
+
+id --> no
+
+
+TransferModalContainer 에서 모달 연결하면 더 복잡해져서 지우고
+TransferModalView 에서 작업하면 될듯
+
+path={`${match.path}/account/:accountNo`}
+--> math.param으로 꺼내오기.
+
+
+
+
+
+
+
+
+
+Account
+open : /account?userId={userId} [POST]
+findAccounts: /account?userId={userId} [GET]
+findAccount: /account/{accountNo} [GET]
+deposit: /account/{accountNo}/deposit/{amount} [PUT]
+withdraw: /account/{accountNo}/withdraw/{amount} [PUT]
+close: /account/{accountNo} [DELETE]
+
+
+TransferModalContainer 에서 모달 연결하면 더 복잡해져서 지우고
+TransferModalView 에서 작업하면 될듯
+
+
+
+
+
+
+
+
